@@ -1,74 +1,665 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Форма с загрузкой изображения</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Первый Цех • AI-вывески</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --primary-red: #dc2626;
+            --light-red: #fef2f2;
+            --dark-red: #991b1b;
+            --gray-light: #f3f4f6;
+            --gray-border: #e5e7eb;
+            --text-dark: #1f2937;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: var(--gray-light);
+            color: var(--text-dark);
+            line-height: 1.5;
+            padding: 16px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .badge {
+            background: var(--primary-red);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            margin: 24px 0;
+            position: relative;
+        }
+        
+        .stepper::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gray-border);
+            z-index: 1;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+        
+        .step-circle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid var(--gray-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .step.active .step-circle {
+            background: var(--primary-red);
+            border-color: var(--primary-red);
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            text-align: center;
+            color: #6b7280;
+        }
+        
+        .step.active .step-label {
+            color: var(--primary-red);
+            font-weight: 500;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .card-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary-red);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        input[type="file"] {
+            padding: 8px 12px;
+        }
+        
+        .required::after {
+            content: " *";
+            color: var(--primary-red);
+        }
+        
+        .font-previews {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        @media (min-width: 768px) {
+            .font-previews {
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+            }
+        }
+        
+        .font-option {
+            border: 1px solid var(--gray-border);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .font-option.selected {
+            border-color: var(--primary-red);
+            background: var(--light-red);
+        }
+        
+        .font-preview {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        
+        .font-bold-impact {
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .font-clean-verdana {
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 16px;
+        }
+        
+        .font-serif-georgia {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-size: 17px;
+        }
+        
+        .font-neutral-arial {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+        }
+        
+        .font-name {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .colors-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .color-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .color-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            border: 2px solid transparent;
+        }
+        
+        .color-option.selected .color-swatch {
+            border-color: var(--primary-red);
+        }
+        
+        .color-name {
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        .color-black { background: #000; }
+        .color-white { background: #fff; border: 1px solid var(--gray-border); }
+        .color-red { background: #dc2626; }
+        .color-orange { background: #ea580c; }
+        .color-yellow { background: #ca8a04; }
+        .color-green { background: #16a34a; }
+        .color-blue { background: #2563eb; }
+        .color-purple { background: #9333ea; }
+        
+        .sign-type-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .sign-type-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid var(--gray-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .sign-type-option.selected {
+            border-color: var(--primary-red);
+            background: var(--light-red);
+        }
+        
+        .sign-type-radio {
+            margin-right: 12px;
+        }
+        
+        .sign-type-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .submit-button {
+            width: 100%;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+        
+        .submit-button:hover {
+            background: var(--dark-red);
+        }
+        
+        .submit-button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .optional {
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: normal;
+        }
+    </style>
 </head>
 <body>
-  <h1>Загрузка заявки</h1>
+    <div class="header">
+        <div class="badge">Первый Цех • AI-вывески</div>
+        <h1>Бриф на разработку вывески</h1>
+        <p class="subtitle">Заполните форму, чтобы мы создали вывеску вашей мечты</p>
+    </div>
+    
+    <div class="stepper">
+        <div class="step active">
+            <div class="step-circle">1</div>
+            <div class="step-label">Фото фасада</div>
+        </div>
+        <div class="step">
+            <div class="step-circle">2</div>
+            <div class="step-label">Текст / макет</div>
+        </div>
+        <div class="step">
+            <div class="step-circle">3</div>
+            <div class="step-label">Цвет вывески</div>
+        </div>
+        <div class="step">
+            <div class="step-circle">4</div>
+            <div class="step-label">Тип вывески</div>
+        </div>
+    </div>
+    
+    <form id="briefForm" enctype="multipart/form-data">
+        <!-- Шаг 1: Фото фасада -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-number">1</div>
+                <div class="card-title">Фото фасада</div>
+            </div>
+            <div class="form-group">
+                <label for="facadePhoto" class="required">Загрузите фото вашего фасада</label>
+                <input type="file" id="facadePhoto" name="facadePhoto" accept="image/*" required>
+            </div>
+        </div>
+        
+        <!-- Шаг 2: Текст / макет вывески -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-number">2</div>
+                <div class="card-title">Текст / макет вывески</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="signFile">Логотип или макет (если есть)</label>
+                <input type="file" id="signFile" name="signFile" accept="image/*,image/svg+xml">
+            </div>
+            
+            <div class="form-group">
+                <label for="signText">Текст вывески</label>
+                <input type="text" id="signText" name="signText" placeholder="Например: Булочная «Хлеб да соль»">
+            </div>
+            
+            <div class="form-group">
+                <label>Выберите шрифт</label>
+                <div class="font-previews">
+                    <div class="font-option selected" data-font="bold-impact">
+                        <div class="font-preview font-bold-impact">Пример</div>
+                        <div class="font-name">Жирный Impact</div>
+                    </div>
+                    <div class="font-option" data-font="clean-verdana">
+                        <div class="font-preview font-clean-verdana">Пример</div>
+                        <div class="font-name">Чистый Verdana</div>
+                    </div>
+                    <div class="font-option" data-font="serif-georgia">
+                        <div class="font-preview font-serif-georgia">Пример</div>
+                        <div class="font-name">Классический Georgia</div>
+                    </div>
+                    <div class="font-option" data-font="neutral-arial">
+                        <div class="font-preview font-neutral-arial">Пример</div>
+                        <div class="font-name">Нейтральный Arial</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Шаг 3: Цвет вывески -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-number">3</div>
+                <div class="card-title">Цвет вывески</div>
+            </div>
+            
+            <div class="colors-grid">
+                <div class="color-option" data-color="black">
+                    <div class="color-swatch color-black"></div>
+                    <div class="color-name">Чёрный</div>
+                </div>
+                <div class="color-option" data-color="white">
+                    <div class="color-swatch color-white"></div>
+                    <div class="color-name">Белый</div>
+                </div>
+                <div class="color-option" data-color="red">
+                    <div class="color-swatch color-red"></div>
+                    <div class="color-name">Красный</div>
+                </div>
+                <div class="color-option" data-color="orange">
+                    <div class="color-swatch color-orange"></div>
+                    <div class="color-name">Оранжевый</div>
+                </div>
+                <div class="color-option" data-color="yellow">
+                    <div class="color-swatch color-yellow"></div>
+                    <div class="color-name">Жёлтый</div>
+                </div>
+                <div class="color-option" data-color="green">
+                    <div class="color-swatch color-green"></div>
+                    <div class="color-name">Зелёный</div>
+                </div>
+                <div class="color-option" data-color="blue">
+                    <div class="color-swatch color-blue"></div>
+                    <div class="color-name">Синий</div>
+                </div>
+                <div class="color-option" data-color="purple">
+                    <div class="color-swatch color-purple"></div>
+                    <div class="color-name">Фиолетовый</div>
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-top: 16px;">
+                <label for="colorsText">Цвета словами <span class="optional">(опционально)</span></label>
+                <input type="text" id="colorsText" name="colorsText" placeholder="Например: золотые буквы на тёмном фоне">
+            </div>
+        </div>
+        
+        <!-- Шаг 4: Тип вывески -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-number">4</div>
+                <div class="card-title">Тип вывески</div>
+            </div>
+            
+            <div class="sign-type-options">
+                <div class="sign-type-option" data-type="lightbox">
+                    <input type="radio" name="signType" id="lightbox" class="sign-type-radio" required>
+                    <label for="lightbox" class="sign-type-label">Лайтбокс (световая коробка)</label>
+                </div>
+                <div class="sign-type-option" data-type="dimensional-letters">
+                    <input type="radio" name="signType" id="dimensional-letters" class="sign-type-radio">
+                    <label for="dimensional-letters" class="sign-type-label">Объёмные буквы</label>
+                </div>
+                <div class="sign-type-option" data-type="neon">
+                    <input type="radio" name="signType" id="neon" class="sign-type-radio">
+                    <label for="neon" class="sign-type-label">Неоновая вывеска</label>
+                </div>
+                <div class="sign-type-option" data-type="composite-box">
+                    <input type="radio" name="signType" id="composite-box" class="sign-type-radio">
+                    <label for="composite-box" class="sign-type-label">Композитный бокс</label>
+                </div>
+                <div class="sign-type-option" data-type="metal-letters">
+                    <input type="radio" name="signType" id="metal-letters" class="sign-type-radio">
+                    <label for="metal-letters" class="sign-type-label">Металлические буквы</label>
+                </div>
+            </div>
+        </div>
+        
+        <button type="button" id="submitButton" class="submit-button">Отправить бриф</button>
+    </form>
 
-  <form id="uploadForm">
-    <label>
-      Имя:
-      <input type="text" name="name" required />
-    </label>
-    <br /><br />
+    <script>
+        // URL рабочего вебхука n8n
+        const WEBHOOK_URL = "https://primary-production-2705e.up.railway.app/webhook/1zeh-form";
 
-    <label>
-      Комментарий:
-      <textarea name="comment"></textarea>
-    </label>
-    <br /><br />
-
-    <label>
-      Фото:
-      <input type="file" name="photo" accept="image/*" required />
-    </label>
-    <br /><br />
-
-    <button type="submit">Отправить</button>
-  </form>
-
-  <p id="status"></p>
-
-  <script>
-    // !!! ЗДЕСЬ ТЕБЕ НУЖНО ПОДСТАВИТЬ СВОЙ URL ВЕБХУКА n8n
-    const WEBHOOK_URL = "https://primary-production-2705e.up.railway.app/webhook-test/1zeh-form";
-
-    const form = document.getElementById("uploadForm");
-    const status = document.getElementById("status");
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      status.textContent = "Отправляем...";
-
-      const formData = new FormData(form); // сюда автоматически попадёт файл и текстовые поля
-
-      try {
-        const response = await fetch(WEBHOOK_URL, {
-          method: "POST",
-          body: formData, // ВАЖНО: НЕ ставим headers Content-Type — браузер сам поставит multipart/form-data
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        
+        // Элементы DOM
+        const briefForm = document.getElementById('briefForm');
+        const submitButton = document.getElementById('submitButton');
+        const signTextInput = document.getElementById('signText');
+        const fontOptions = document.querySelectorAll('.font-option');
+        const colorOptions = document.querySelectorAll('.color-option');
+        const signTypeOptions = document.querySelectorAll('.sign-type-option');
+        
+        // Состояние приложения
+        let selectedFont = 'bold-impact';
+        let selectedColors = [];
+        let selectedSignType = null;
+        
+        // Обновление предпросмотра шрифтов
+        function updateFontPreviews() {
+            const text = signTextInput.value || 'Пример';
+            document.querySelectorAll('.font-preview').forEach(preview => {
+                preview.textContent = text;
+            });
+        }
+        
+        // Обработчики событий
+        signTextInput.addEventListener('input', updateFontPreviews);
+        
+        fontOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                fontOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedFont = option.getAttribute('data-font');
+            });
         });
-
-        if (!response.ok) {
-          throw new Error("HTTP " + response.status);
+        
+        colorOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const color = option.getAttribute('data-color');
+                if (selectedColors.includes(color)) {
+                    selectedColors = selectedColors.filter(c => c !== color);
+                    option.classList.remove('selected');
+                } else {
+                    selectedColors.push(color);
+                    option.classList.add('selected');
+                }
+            });
+        });
+        
+        signTypeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const radio = option.querySelector('input[type="radio"]');
+                radio.checked = true;
+                selectedSignType = radio.id;
+                
+                signTypeOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+            });
+        });
+        
+        // Валидация формы
+        function validateForm() {
+            const facadeFile = document.getElementById('facadePhoto').files[0];
+            const signFile = document.getElementById('signFile').files[0];
+            const signText = signTextInput.value.trim();
+            
+            // Обязательное фото фасада
+            if (!facadeFile) {
+                alert('Загрузите фото фасада.');
+                return false;
+            }
+            
+            // Должно быть либо макет, либо текст (или оба)
+            if (!signFile && !signText) {
+                alert('Добавьте логотип/макет или введите текст вывески.');
+                return false;
+            }
+            
+            // Тип вывески обязателен
+            if (!selectedSignType) {
+                alert('Пожалуйста, выберите тип вывески.');
+                return false;
+            }
+            
+            return true;
         }
-
-        let data = null;
-        try {
-          data = await response.json();
-        } catch (e) {
-          // если n8n вернёт не JSON — просто игнорируем
+        
+        // Основная функция отправки
+        async function submitBrief() {
+            if (!validateForm()) {
+                return;
+            }
+            
+            const facadeFile = document.getElementById('facadePhoto').files[0];
+            const signFile = document.getElementById('signFile').files[0];
+            const colorsText = document.getElementById('colorsText').value.trim() || null;
+            const signText = signTextInput.value.trim() || null;
+            
+            submitButton.disabled = true;
+            submitButton.textContent = 'Отправка...';
+            
+            try {
+                const formData = new FormData();
+                
+                // Файлы (отдельно фасад и макет вывески)
+                formData.append('facadePhoto', facadeFile);
+                if (signFile) {
+                    formData.append('signFile', signFile);
+                }
+                
+                // Текстовые поля
+                if (signText) formData.append('signText', signText); // текст вывески отдельно от файла
+                formData.append('fontChoice', selectedFont);
+                formData.append('colors', selectedColors.join(',')); // "red,black,white"
+                if (colorsText) formData.append('colorsText', colorsText);
+                formData.append('signType', selectedSignType);
+                
+                // Данные Telegram пользователя
+                const tgUserId = tg.initDataUnsafe?.user?.id || null;
+                const chatId = tg.initDataUnsafe?.user?.id || null;
+                const username = tg.initDataUnsafe?.user?.username || null;
+                const firstName = tg.initDataUnsafe?.user?.first_name || null;
+                const lastName = tg.initDataUnsafe?.user?.last_name || null;
+                
+                if (tgUserId) formData.append('tgUserId', tgUserId);
+                if (chatId) formData.append('chatId', chatId);
+                if (username) formData.append('username', username);
+                if (firstName) formData.append('firstName', firstName);
+                if (lastName) formData.append('lastName', lastName);
+                
+                formData.append('sentAt', new Date().toISOString());
+                
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    body: formData
+                    // Content-Type НЕ указываем — браузер сам поставит multipart/form-data с границами
+                });
+                
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                
+                alert('Бриф успешно отправлен!');
+                tg.close();
+            } catch (error) {
+                console.error(error);
+                alert('Ошибка отправки: ' + error.message);
+                submitButton.disabled = false;
+                submitButton.textContent = 'Отправить бриф';
+            }
         }
-
-        status.textContent = "Успешно отправлено!";
-      } catch (error) {
-        console.error(error);
-        status.textContent = "Ошибка отправки: " + error.message;
-      }
-    });
-  </script>
+        
+        // Обработчик клика по кнопке
+        submitButton.addEventListener('click', submitBrief);
+        
+        // Инициализация предпросмотра шрифтов
+        updateFontPreviews();
+    </script>
 </body>
 </html>
