@@ -1,775 +1,667 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Бриф на разработку вывески</title>
-
-  <!-- ВАЖНО: SDK Telegram WebApp, чтобы работало и на десктопе, и на мобиле -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <style>
-    :root {
-      --accent: #e53935;
-      --accent-soft: #ffebee;
-      --bg: #f5f5f7;
-      --card-bg: #ffffff;
-      --text-main: #1f2933;
-      --text-muted: #6b7280;
-      --border-subtle: #e5e7eb;
-      --radius-lg: 16px;
-      --shadow-soft: 0 10px 25px rgba(15, 23, 42, 0.08);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top left, #fff5f5 0, #f5f5f7 40%, #f9fafb 100%);
-      color: var(--text-main);
-    }
-
-    body {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: stretch;
-      padding: 16px;
-    }
-
-    .page-wrapper {
-      width: 100%;
-      max-width: 960px;
-      margin: auto;
-    }
-
-    .card-main {
-      background: var(--card-bg);
-      border-radius: 24px;
-      box-shadow: var(--shadow-soft);
-      padding: 20px 16px 18px;
-    }
-
-    @media (min-width: 768px) {
-      .card-main {
-        padding: 28px 28px 24px;
-      }
-    }
-
-    .header {
-      margin-bottom: 18px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    .badge-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--accent);
-    }
-
-    .title {
-      margin: 10px 0 4px;
-      font-size: 22px;
-      line-height: 1.2;
-    }
-
-    @media (min-width: 768px) {
-      .title {
-        font-size: 26px;
-      }
-    }
-
-    .subtitle {
-      margin: 0;
-      color: var(--text-muted);
-      font-size: 14px;
-    }
-
-    .stepper {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 18px 0 20px;
-      padding: 10px;
-      border-radius: 16px;
-      background: #f9fafb;
-      border: 1px solid var(--border-subtle);
-    }
-
-    .step {
-      flex: 1 1 45%;
-      min-width: 130px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: white;
-      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
-      font-size: 12px;
-    }
-
-    @media (min-width: 768px) {
-      .step {
-        flex: 1 1 22%;
-      }
-    }
-
-    .step-number {
-      width: 20px;
-      height: 20px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .step-label {
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .grid {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    @media (min-width: 768px) {
-      .grid {
-        gap: 18px;
-      }
-    }
-
-    .section-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: 14px 14px 12px;
-      border: 1px solid rgba(148, 163, 184, 0.2);
-    }
-
-    @media (min-width: 768px) {
-      .section-card {
-        padding: 16px 16px 14px;
-      }
-    }
-
-    .section-header {
-      display: flex;
-      gap: 10px;
-      align-items: baseline;
-      margin-bottom: 8px;
-    }
-
-    .section-number {
-      width: 22px;
-      height: 22px;
-      border-radius: 999px;
-      background: var(--accent);
-      color: white;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .section-title {
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .section-description {
-      margin: 0 0 8px 32px;
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 8px;
-    }
-
-    .field label {
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .field small {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    input[type="file"] {
-      font-size: 12px;
-      padding: 6px 0;
-    }
-
-    input[type="text"] {
-      border-radius: 999px;
-      border: 1px solid var(--border-subtle);
-      padding: 8px 12px;
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-      background: #f9fafb;
-    }
-
-    input[type="text"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(229, 57, 53, 0.3);
-      background: white;
-    }
-
-    .fonts-wrapper {
-      margin-top: 8px;
-    }
-
-    .font-grid {
-      display: grid;
-      grid-template-columns: repeat(1, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    @media (min-width: 768px) {
-      .font-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-      }
-    }
-
-    .font-card {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 8px 9px;
-      border-radius: 12px;
-      border: 1px solid var(--border-subtle);
-      background: #f9fafb;
-      cursor: pointer;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, transform 0.08s ease;
-      min-height: 72px;
-    }
-
-    .font-card:hover {
-      border-color: rgba(229, 57, 53, 0.5);
-      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
-      transform: translateY(-1px);
-    }
-
-    .font-card.selected {
-      border-color: var(--accent);
-      background: #fff5f5;
-      box-shadow: 0 0 0 1px rgba(229, 57, 53, 0.45);
-    }
-
-    .font-radio {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-    }
-
-    .font-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-    }
-
-    .font-preview {
-      font-size: 14px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .font-bold-impact {
-      font-family: 'Impact', 'Arial Black', system-ui, sans-serif;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-    }
-
-    .font-clean-verdana {
-      font-family: Verdana, Geneva, Tahoma, sans-serif;
-      font-weight: 600;
-    }
-
-    .font-serif-georgia {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-weight: 600;
-    }
-
-    .font-neutral-arial {
-      font-family: Arial, 'Helvetica Neue', sans-serif;
-      font-weight: 500;
-    }
-
-    .chips-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 5px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border-subtle);
-      background: #f9fafb;
-      font-size: 12px;
-      cursor: pointer;
-      transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .chip input {
-      margin: 0;
-    }
-
-    .chip:hover {
-      border-color: rgba(229, 57, 53, 0.4);
-      background: #fff;
-      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
-    }
-
-    .radio-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    @media (min-width: 768px) {
-      .radio-group {
-        flex-direction: row;
-        flex-wrap: wrap;
-      }
-    }
-
-    .radio-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 11px;
-      border-radius: 999px;
-      border: 1px solid var(--border-subtle);
-      background: #f9fafb;
-      font-size: 12px;
-      cursor: pointer;
-      transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .radio-pill input {
-      margin: 0;
-    }
-
-    .radio-pill:hover {
-      border-color: rgba(229, 57, 53, 0.4);
-      background: #fff;
-      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
-    }
-
-    .submit-wrapper {
-      margin-top: 18px;
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    #submitButton {
-      border: none;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #ef4444, #b91c1c);
-      color: white;
-      padding: 10px 22px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 12px 30px rgba(239, 68, 68, 0.45);
-      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease, background-position 0.12s ease;
-      background-size: 150% 150%;
-      background-position: 0 50%;
-    }
-
-    #submitButton:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 16px 36px rgba(185, 28, 28, 0.55);
-      filter: brightness(1.02);
-      background-position: 100% 50%;
-    }
-
-    #submitButton:active {
-      transform: translateY(0);
-      box-shadow: 0 8px 20px rgba(127, 29, 29, 0.55);
-    }
-
-    #submitButton:disabled {
-      cursor: default;
-      opacity: 0.7;
-      box-shadow: none;
-    }
-
-    .submit-icon {
-      font-size: 14px;
-    }
-
-    .helper-text {
-      margin-top: 4px;
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Первый Цех • AI-вывески</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --primary-red: #dc2626;
+            --light-red: #fef2f2;
+            --dark-red: #991b1b;
+            --gray-light: #f3f4f6;
+            --gray-border: #e5e7eb;
+            --text-dark: #1f2937;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: var(--gray-light);
+            color: var(--text-dark);
+            line-height: 1.5;
+            padding: 16px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .badge {
+            background: var(--primary-red);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            margin: 24px 0;
+            position: relative;
+        }
+        
+        .stepper::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gray-border);
+            z-index: 1;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+        
+        .step-circle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid var(--gray-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .step.active .step-circle {
+            background: var(--primary-red);
+            border-color: var(--primary-red);
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            text-align: center;
+            color: #6b7280;
+        }
+        
+        .step.active .step-label {
+            color: var(--primary-red);
+            font-weight: 500;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .card-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary-red);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        input[type="file"] {
+            padding: 8px 12px;
+        }
+        
+        .required::after {
+            content: " *";
+            color: var(--primary-red);
+        }
+        
+        .font-previews {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        @media (min-width: 768px) {
+            .font-previews {
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+            }
+        }
+        
+        .font-option {
+            border: 1px solid var(--gray-border);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .font-option.selected {
+            border-color: var(--primary-red);
+            background: var(--light-red);
+        }
+        
+        .font-preview {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        
+        .font-bold-impact {
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .font-clean-verdana {
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 16px;
+        }
+        
+        .font-serif-georgia {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-size: 17px;
+        }
+        
+        .font-neutral-arial {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+        }
+        
+        .font-name {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .colors-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .color-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .color-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            border: 2px solid transparent;
+        }
+        
+        .color-option.selected .color-swatch {
+            border-color: var(--primary-red);
+        }
+        
+        .color-name {
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        .color-black { background: #000; }
+        .color-white { background: #fff; border: 1px solid var(--gray-border); }
+        .color-red { background: #dc2626; }
+        .color-orange { background: #ea580c; }
+        .color-yellow { background: #ca8a04; }
+        .color-green { background: #16a34a; }
+        .color-blue { background: #2563eb; }
+        .color-purple { background: #9333ea; }
+        
+        .sign-type-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .sign-type-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid var(--gray-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .sign-type-option.selected {
+            border-color: var(--primary-red);
+            background: var(--light-red);
+        }
+        
+        .sign-type-radio {
+            margin-right: 12px;
+        }
+        
+        .sign-type-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .submit-button {
+            width: 100%;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+        
+        .submit-button:hover {
+            background: var(--dark-red);
+        }
+        
+        .submit-button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .optional {
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: normal;
+        }
+    </style>
 </head>
 <body>
-  <div class="page-wrapper">
-    <div class="card-main">
-      <header class="header">
-        <div class="badge">
-          <span class="badge-dot"></span>
-          <span>Первый цех • AI-вывески</span>
-        </div>
-        <h1 class="title">Бриф на разработку вывески</h1>
-        <p class="subtitle">Загрузите фото фасада и опишите, какую вывеску вы хотите. Мы подготовим варианты под вашу задачу.</p>
-      </header>
-
-      <div class="stepper">
-        <div class="step">
-          <span class="step-number">1</span>
-          <span class="step-label">Фото фасада</span>
-        </div>
-        <div class="step">
-          <span class="step-number">2</span>
-          <span class="step-label">Текст / макет вывески</span>
-        </div>
-        <div class="step">
-          <span class="step-number">3</span>
-          <span class="step-label">Цвет вывески</span>
-        </div>
-        <div class="step">
-          <span class="step-number">4</span>
-          <span class="step-label">Тип вывески</span>
-        </div>
-      </div>
-
-      <div class="grid">
-        <!-- Шаг 1 -->
-        <section class="section-card">
-          <div class="section-header">
-            <div class="section-number">1</div>
-            <div class="section-title">Фото фасада<span style="color:#ef4444; margin-left:4px;">*</span></div>
-          </div>
-          <p class="section-description">Загрузите одно фото фасада, на котором хорошо видно место, где будет располагаться вывеска.</p>
-
-          <div class="field">
-            <label for="facadePhoto">Файл изображения</label>
-            <input type="file" id="facadePhoto" name="facadePhoto" accept="image/*" />
-            <small>Допустимые форматы: JPG, PNG и другие изображения. Максимально чёткий ракурс фасада.</small>
-          </div>
-        </section>
-
-        <!-- Шаг 2 -->
-        <section class="section-card">
-          <div class="section-header">
-            <div class="section-number">2</div>
-            <div class="section-title">Текст / макет вывески</div>
-          </div>
-          <p class="section-description">Можно приложить готовый логотип/макет или просто написать текст, который будет на вывеске.</p>
-
-          <div class="field">
-            <label for="signFile">Файл с логотипом или макетом (опционально)</label>
-            <input type="file" id="signFile" name="signFile" accept="image/*,image/svg+xml" />
-            <small>Например, логотип, готовый дизайн или скриншот. Необязательно, если вы вводите текст ниже.</small>
-          </div>
-
-          <div class="field">
-            <label for="signText">Текст на вывеске</label>
-            <input type="text" id="signText" name="signText" placeholder="Например: булочная «Хлеб да Соль»" />
-            <small>Обязателен либо файл макета, либо текст вывески.</small>
-          </div>
-
-          <div class="fonts-wrapper">
-            <div class="field">
-              <label>Стиль шрифта</label>
-              <small>Текст выше автоматически подставляется в предпросмотр. Выберите, какой стиль вам ближе.</small>
-            </div>
-            <div class="font-grid" id="fontGrid">
-              <label class="font-card selected" data-font="bold-impact">
-                <input class="font-radio" type="radio" name="fontChoice" value="bold-impact" checked />
-                <span class="font-label">bold-impact</span>
-                <div class="font-preview font-bold-impact" data-preview="true"></div>
-              </label>
-
-              <label class="font-card" data-font="clean-verdana">
-                <input class="font-radio" type="radio" name="fontChoice" value="clean-verdana" />
-                <span class="font-label">clean-verdana</span>
-                <div class="font-preview font-clean-verdana" data-preview="true"></div>
-              </label>
-
-              <label class="font-card" data-font="serif-georgia">
-                <input class="font-radio" type="radio" name="fontChoice" value="serif-georgia" />
-                <span class="font-label">serif-georgia</span>
-                <div class="font-preview font-serif-georgia" data-preview="true"></div>
-              </label>
-
-              <label class="font-card" data-font="neutral-arial">
-                <input class="font-radio" type="radio" name="fontChoice" value="neutral-arial" />
-                <span class="font-label">neutral-arial</span>
-                <div class="font-preview font-neutral-arial" data-preview="true"></div>
-              </label>
-            </div>
-          </div>
-        </section>
-
-        <!-- Шаг 3 -->
-        <section class="section-card">
-          <div class="section-header">
-            <div class="section-number">3</div>
-            <div class="section-title">Цвет вывески</div>
-          </div>
-          <p class="section-description">Отметьте подходящие цвета и при желании уточните их словами.</p>
-
-          <div class="field">
-            <label>Основные цвета</label>
-            <div class="chips-group">
-              <label class="chip"><input type="checkbox" name="colors" value="black" /> чёрный</label>
-              <label class="chip"><input type="checkbox" name="colors" value="white" /> белый</label>
-              <label class="chip"><input type="checkbox" name="colors" value="red" /> красный</label>
-              <label class="chip"><input type="checkbox" name="colors" value="orange" /> оранжевый</label>
-              <label class="chip"><input type="checkbox" name="colors" value="yellow" /> жёлтый</label>
-              <label class="chip"><input type="checkbox" name="colors" value="green" /> зелёный</label>
-              <label class="chip"><input type="checkbox" name="colors" value="blue" /> синий</label>
-              <label class="chip"><input type="checkbox" name="colors" value="purple" /> фиолетовый</label>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="colorsText">Цвета словами (опционально)</label>
-            <input type="text" id="colorsText" name="colorsText" placeholder="Например: золотые буквы на тёмном фоне" />
-          </div>
-        </section>
-
-        <!-- Шаг 4 -->
-        <section class="section-card">
-          <div class="section-header">
-            <div class="section-number">4</div>
-            <div class="section-title">Тип вывески<span style="color:#ef4444; margin-left:4px;">*</span></div>
-          </div>
-          <p class="section-description">Выберите формат вывески. Можно ориентироваться на то, что вы уже видели у других.</p>
-
-          <div class="field">
-            <label>Тип конструкции</label>
-            <div class="radio-group">
-              <label class="radio-pill"><input type="radio" name="signType" value="lightbox" /> lightbox (световой короб)</label>
-              <label class="radio-pill"><input type="radio" name="signType" value="dimensional-letters" /> объёмные буквы</label>
-              <label class="radio-pill"><input type="radio" name="signType" value="neon" /> неон / LED-неон</label>
-              <label class="radio-pill"><input type="radio" name="signType" value="composite-box" /> композитный короб</label>
-              <label class="radio-pill"><input type="radio" name="signType" value="metal-letters" /> металлические буквы</label>
-            </div>
-            <p class="helper-text">Это поле обязательно — без выбора типа мы не сможем предложить точное решение.</p>
-          </div>
-        </section>
-      </div>
-
-      <div class="submit-wrapper">
-        <button id="submitButton" type="button">
-          <span>Отправить бриф</span>
-          <span class="submit-icon">➜</span>
-        </button>
-      </div>
+    <div class="header">
+        <div class="badge">Первый Цех • AI-вывески</div>
+        <h1>Бриф на разработку вывески</h1>
+        <p class="subtitle">Заполните форму, чтобы мы создали вывеску вашей мечты</p>
     </div>
-  </div>
+    
+    <div class="stepper">
+        <div class="step active">
+            <div class="step-circle">1</div>
+            <div class="step-label">Фото фасада</div>
+        </div>
+        <div class="step">
+            <div class="step-circle">2</div>
+            <div class="step-label">Текст / макет</div>
+        </div>
+        <div class="step">
+            <div class="step-circle">3</div>
+            <div class="step-label">Цвет вывески</div>
+        </div>
+        <div class="step">
+            <div class="step-circle">4</div>
+            <div class="step-label">Тип вывески</div>
+        </div>
+    </div>
+    
+    <form id="briefForm">
+        <!-- Шаг 1: Фото фасада -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-number">1</div>
+                <div class="card-title">Фото фасада</div>
+            </div>
+            <div class="form-group">
+                <label for="facadePhoto" class="required">Загрузите фото вашего фасада</label>
+                <input type="file" id="facadePhoto" name="facadePhoto" accept="image/*" required>
+            </div>
+        </div>
+        
+        <!-- Шаг 2: Текст / макет вывески -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-number">2</div>
+                <div class="card-title">Текст / макет вывески</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="signFile">Логотип или макет (если есть)</label>
+                <input type="file" id="signFile" name="signFile" accept="image/*,image/svg+xml">
+            </div>
+            
+            <div class="form-group">
+                <label for="signText">Текст вывески</label>
+                <input type="text" id="signText" name="signText" placeholder="Например: Булочная «Хлеб да соль»">
+            </div>
+            
+            <div class="form-group">
+                <label>Выберите шрифт</label>
+                <div class="font-previews">
+                    <div class="font-option selected" data-font="bold-impact">
+                        <div class="font-preview font-bold-impact">Пример</div>
+                        <div class="font-name">Жирный Impact</div>
+                    </div>
+                    <div class="font-option" data-font="clean-verdana">
+                        <div class="font-preview font-clean-verdana">Пример</div>
+                        <div class="font-name">Чистый Verdana</div>
+                    </div>
+                    <div class="font-option" data-font="serif-georgia">
+                        <div class="font-preview font-serif-georgia">Пример</div>
+                        <div class="font-name">Классический Georgia</div>
+                    </div>
+                    <div class="font-option" data-font="neutral-arial">
+                        <div class="font-preview font-neutral-arial">Пример</div>
+                        <div class="font-name">Нейтральный Arial</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Шаг 3: Цвет вывески -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-number">3</div>
+                <div class="card-title">Цвет вывески</div>
+            </div>
+            
+            <div class="colors-grid">
+                <div class="color-option" data-color="black">
+                    <div class="color-swatch color-black"></div>
+                    <div class="color-name">Чёрный</div>
+                </div>
+                <div class="color-option" data-color="white">
+                    <div class="color-swatch color-white"></div>
+                    <div class="color-name">Белый</div>
+                </div>
+                <div class="color-option" data-color="red">
+                    <div class="color-swatch color-red"></div>
+                    <div class="color-name">Красный</div>
+                </div>
+                <div class="color-option" data-color="orange">
+                    <div class="color-swatch color-orange"></div>
+                    <div class="color-name">Оранжевый</div>
+                </div>
+                <div class="color-option" data-color="yellow">
+                    <div class="color-swatch color-yellow"></div>
+                    <div class="color-name">Жёлтый</div>
+                </div>
+                <div class="color-option" data-color="green">
+                    <div class="color-swatch color-green"></div>
+                    <div class="color-name">Зелёный</div>
+                </div>
+                <div class="color-option" data-color="blue">
+                    <div class="color-swatch color-blue"></div>
+                    <div class="color-name">Синий</div>
+                </div>
+                <div class="color-option" data-color="purple">
+                    <div class="color-swatch color-purple"></div>
+                    <div class="color-name">Фиолетовый</div>
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-top: 16px;">
+                <label for="colorsText">Цвета словами <span class="optional">(опционально)</span></label>
+                <input type="text" id="colorsText" name="colorsText" placeholder="Например: золотые буквы на тёмном фоне">
+            </div>
+        </div>
+        
+        <!-- Шаг 4: Тип вывески -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-number">4</div>
+                <div class="card-title">Тип вывески</div>
+            </div>
+            
+            <div class="sign-type-options">
+                <div class="sign-type-option" data-type="lightbox">
+                    <input type="radio" name="signType" id="lightbox" class="sign-type-radio" required>
+                    <label for="lightbox" class="sign-type-label">Лайтбокс (световая коробка)</label>
+                </div>
+                <div class="sign-type-option" data-type="dimensional-letters">
+                    <input type="radio" name="signType" id="dimensional-letters" class="sign-type-radio">
+                    <label for="dimensional-letters" class="sign-type-label">Объёмные буквы</label>
+                </div>
+                <div class="sign-type-option" data-type="neon">
+                    <input type="radio" name="signType" id="neon" class="sign-type-radio">
+                    <label for="neon" class="sign-type-label">Неоновая вывеска</label>
+                </div>
+                <div class="sign-type-option" data-type="composite-box">
+                    <input type="radio" name="signType" id="composite-box" class="sign-type-radio">
+                    <label for="composite-box" class="sign-type-label">Композитный бокс</label>
+                </div>
+                <div class="sign-type-option" data-type="metal-letters">
+                    <input type="radio" name="signType" id="metal-letters" class="sign-type-radio">
+                    <label for="metal-letters" class="sign-type-label">Металлические буквы</label>
+                </div>
+            </div>
+        </div>
+        
+        <button type="button" id="submitButton" class="submit-button">Отправить бриф</button>
+    </form>
 
-  <script>
-    (function () {
-      // Инициализация Telegram WebApp
-      const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-      if (tg && typeof tg.ready === 'function') {
-        tg.ready();
-      }
-      if (tg && typeof tg.expand === 'function') {
+    <script>
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
         tg.expand();
-      }
-
-      const signTextInput = document.getElementById('signText');
-      const previewNodes = document.querySelectorAll('.font-preview[data-preview="true"]');
-      const fontCards = document.querySelectorAll('.font-card');
-      const submitButton = document.getElementById('submitButton');
-
-      function updateFontPreviews() {
-        const value = signTextInput.value.trim() || 'Текст вывески';
-        previewNodes.forEach(function (node) {
-          node.textContent = value;
+        
+        // Элементы DOM
+        const briefForm = document.getElementById('briefForm');
+        const submitButton = document.getElementById('submitButton');
+        const signTextInput = document.getElementById('signText');
+        const fontOptions = document.querySelectorAll('.font-option');
+        const colorOptions = document.querySelectorAll('.color-option');
+        const signTypeOptions = document.querySelectorAll('.sign-type-option');
+        
+        // Состояние приложения
+        let selectedFont = 'bold-impact';
+        let selectedColors = [];
+        let selectedSignType = null;
+        
+        // Обновление предпросмотра шрифтов
+        function updateFontPreviews() {
+            const text = signTextInput.value || 'Пример';
+            document.querySelectorAll('.font-preview').forEach(preview => {
+                preview.textContent = text;
+            });
+        }
+        
+        // Обработчики событий
+        signTextInput.addEventListener('input', updateFontPreviews);
+        
+        fontOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                fontOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedFont = option.getAttribute('data-font');
+            });
         });
-      }
-
-      updateFontPreviews();
-      signTextInput.addEventListener('input', updateFontPreviews);
-
-      fontCards.forEach(function (card) {
-        card.addEventListener('click', function (event) {
-          if (event.target.tagName.toLowerCase() !== 'input') {
-            const radio = card.querySelector('input[type="radio"]');
-            if (radio) {
-              radio.checked = true;
+        
+        colorOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const color = option.getAttribute('data-color');
+                if (selectedColors.includes(color)) {
+                    selectedColors = selectedColors.filter(c => c !== color);
+                    option.classList.remove('selected');
+                } else {
+                    selectedColors.push(color);
+                    option.classList.add('selected');
+                }
+            });
+        });
+        
+        signTypeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const radio = option.querySelector('input[type="radio"]');
+                radio.checked = true;
+                selectedSignType = radio.id;
+                
+                signTypeOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+            });
+        });
+        
+        // Функция для чтения файла и преобразования в base64
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    // Убираем префикс "data:image/...;base64,"
+                    const base64 = reader.result.split(',')[1];
+                    resolve({
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        base64: base64
+                    });
+                };
+                reader.onerror = () => reject(new Error('Не удалось прочитать файл'));
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // Валидация формы
+        function validateForm() {
+            const facadeFile = document.getElementById('facadePhoto').files[0];
+            const signFile = document.getElementById('signFile').files[0];
+            const signText = signTextInput.value.trim();
+            
+            // Проверка обязательного фото фасада
+            if (!facadeFile) {
+                alert('Загрузите фото фасада.');
+                return false;
             }
-          }
-          fontCards.forEach(function (c) {
-            c.classList.remove('selected');
-          });
-          card.classList.add('selected');
-        });
-      });
-
-      function fileToPayload(file) {
-        return new Promise(function (resolve, reject) {
-          if (!file) {
-            resolve(null);
-            return;
-          }
-
-          const reader = new FileReader();
-
-          reader.onload = function () {
-            try {
-              const result = String(reader.result || '');
-              const parts = result.split(',');
-              if (parts.length < 2) {
-                reject(new Error('Некорректный формат данных файла: ' + file.name));
+            
+            // Проверка, что есть либо файл макета, либо текст
+            if (!signFile && !signText) {
+                alert('Добавьте логотип/макет или введите текст вывески.');
+                return false;
+            }
+            
+            // Проверка выбранного типа вывески
+            if (!selectedSignType) {
+                alert('Пожалуйста, выберите тип вывески.');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Основная функция отправки
+        async function submitBrief() {
+            // Валидация
+            if (!validateForm()) {
                 return;
-              }
-              const base64 = parts[1];
-              resolve({
-                name: file.name,
-                type: file.type,
-                size: file.size,
-                base64: base64,
-              });
-            } catch (e) {
-              reject(e);
             }
-          };
-
-          reader.onerror = function () {
-            reject(new Error('Не удалось прочитать файл: ' + file.name));
-          };
-
-          reader.readAsDataURL(file);
-        });
-      }
-
-      async function handleSubmit() {
-        const facadeInput = document.getElementById('facadePhoto');
-        const signFileInput = document.getElementById('signFile');
-        const colorsTextInput = document.getElementById('colorsText');
-
-        const facadeFile = facadeInput.files[0] || null;
-        const signFile = signFileInput.files[0] || null;
-
-        const signText = signTextInput.value.trim();
-        const colorsText = colorsTextInput.value.trim();
-
-        const signTypeNode = document.querySelector('input[name="signType"]:checked');
-        const fontChoiceNode = document.querySelector('input[name="fontChoice"]:checked');
-
-        // Валидация
-        if (!facadeFile) {
-          alert('Загрузите фото фасада.');
-          return;
-        }
-
-        if (!signTypeNode) {
-          alert('Пожалуйста, выберите тип вывески.');
-          return;
-        }
-
-        if (!signFile && !signText) {
-          alert('Добавьте логотип/макет или введите текст вывески.');
-          return;
-        }
-
-        const colors = Array.from(document.querySelectorAll('input[name="colors"]:checked')).map(function (node) {
-          return node.value;
-        });
-
-        const fontChoice = fontChoiceNode ? fontChoiceNode.value : null;
-
-        const tgUserId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
-        const chatId = tgUserId;
-        const sentAt = new Date().toISOString();
-
-        submitButton.disabled = true;
-        const originalButtonText = submitButton.textContent;
-        submitButton.textContent = 'Отправка…';
-
-        try {
-          const facadePayload = await fileToPayload(facadeFile);
-          const signFilePayload = signFile ? await fileToPayload(signFile) : null;
-
-          const payload = {
-            facadeFile: facadePayload,
-            signFile: signFilePayload,
-            signText: signText || null,
-            fontChoice: fontChoice || null,
-            colors: colors,
-            colorsText: colorsText || null,
-            signType: signTypeNode ? signTypeNode.value : null,
-            tgUserId: tgUserId,
-            chatId: chatId,
-            sentAt: sentAt,
-          };
-
-          if (tg && typeof tg.sendData === 'function') {
-            tg.sendData(JSON.stringify(payload));
-            if (typeof tg.close === 'function') {
-              tg.close();
+            
+            // Получаем файлы
+            const facadeFile = document.getElementById('facadePhoto').files[0];
+            const signFile = document.getElementById('signFile').files[0];
+            
+            // Блокируем кнопку
+            submitButton.disabled = true;
+            submitButton.textContent = 'Отправка...';
+            
+            try {
+                // Читаем файлы
+                const facadeFileData = await readFileAsBase64(facadeFile);
+                let signFileData = null;
+                
+                if (signFile) {
+                    signFileData = await readFileAsBase64(signFile);
+                }
+                
+                // Формируем payload
+                const payload = {
+                    facadeFile: facadeFileData,
+                    signFile: signFileData,
+                    signText: signTextInput.value.trim() || null,
+                    fontChoice: selectedFont,
+                    colors: selectedColors,
+                    colorsText: document.getElementById('colorsText').value.trim() || null,
+                    signType: selectedSignType,
+                    tgUserId: tg.initDataUnsafe?.user?.id,
+                    chatId: tg.initDataUnsafe?.user?.id,
+                    sentAt: new Date().toISOString()
+                };
+                
+                // Отправляем данные в Telegram бота
+                tg.sendData(JSON.stringify(payload));
+                
+                // Закрываем WebApp
+                tg.close();
+                
+            } catch (error) {
+                alert(`Ошибка при обработке файлов: ${error.message}`);
+                submitButton.disabled = false;
+                submitButton.textContent = 'Отправить бриф';
             }
-          } else {
-            console.log('Telegram.WebApp недоступен. Payload:', payload);
-            alert('Не удалось инициализировать Telegram.WebApp. Проверьте, что вы используете актуальный Telegram-клиент или откройте форму на телефоне.');
-          }
-        } catch (error) {
-          console.error(error);
-          alert(error && error.message ? error.message : 'Произошла ошибка при чтении файлов.');
-        } finally {
-          submitButton.disabled = false;
-          submitButton.textContent = originalButtonText;
         }
-      }
-
-      submitButton.addEventListener('click', handleSubmit);
-    })();
-  </script>
+        
+        // Обработчик отправки формы
+        submitButton.addEventListener('click', submitBrief);
+        
+        // Инициализация предпросмотра шрифтов
+        updateFontPreviews();
+    </script>
 </body>
 </html>
