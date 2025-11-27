@@ -13,12 +13,8 @@
             background-color: #f3f4f6;
         }
 
-        .brand-red {
-            background-color: #ef4444; /* red-500 */
-        }
-        .brand-red:hover {
-            background-color: #dc2626; /* red-600 */
-        }
+        .brand-red { background-color: #ef4444; }
+        .brand-red:hover { background-color: #dc2626; }
 
         .section-card {
             background-color: #ffffff;
@@ -68,18 +64,10 @@
             color: #6b7280;
         }
 
-        .font-impact {
-            font-family: Impact, Haettenschweiler, "Arial Narrow Bold", system-ui, sans-serif;
-        }
-        .font-verdana {
-            font-family: Verdana, system-ui, sans-serif;
-        }
-        .font-georgia {
-            font-family: Georgia, "Times New Roman", serif;
-        }
-        .font-arial {
-            font-family: Arial, system-ui, sans-serif;
-        }
+        .font-impact  { font-family: Impact, Haettenschweiler, "Arial Narrow Bold", system-ui, sans-serif; }
+        .font-verdana { font-family: Verdana, system-ui, sans-serif; }
+        .font-georgia { font-family: Georgia, "Times New Roman", serif; }
+        .font-arial   { font-family: Arial, system-ui, sans-serif; }
 
         .preview-text {
             font-size: 1.05rem;
@@ -95,10 +83,7 @@
             border: 1px solid rgba(148, 163, 184, 0.4);
         }
 
-        .color-label {
-            font-size: 0.875rem;
-            color: #374151;
-        }
+        .color-label { font-size: 0.875rem; color: #374151; }
     </style>
 </head>
 <body class="min-h-screen pb-24">
@@ -162,13 +147,13 @@
                 </label>
                 <p class="text-xs text-gray-500 mb-1">
                     На фото должна быть чётко отмечена область под вывеску (рамка / маркер).
-                    В Telegram вы можете отправить это фото отдельно, если загрузка в мини-приложении недоступна.
                 </p>
                 <input
                     type="file"
                     id="facadePhoto"
                     name="facadePhoto"
-                    accept="image/jpeg, image/png"
+                    accept="image/*"
+                    required
                     class="w-full text-sm text-gray-500
                            file:mr-4 file:py-2 file:px-4
                            file:rounded-md file:border-0
@@ -177,12 +162,12 @@
                            hover:file:bg-red-100"
                 >
                 <p class="mt-1 text-xs text-gray-400">
-                    Форматы: JPEG, PNG (до 5&nbsp;МБ). Внутри Telegram передайте фото боту, чтобы мы привязали его к брифу.
+                    Форматы: JPEG, PNG (до 5&nbsp;МБ).
                 </p>
             </div>
         </section>
 
-        <!-- Шаг 2: О вывеске (файл / текст + шрифты) -->
+        <!-- Шаг 2: Текст / макет вывески -->
         <section class="section-card space-y-6">
             <div class="flex items-center gap-3">
                 <span class="step-badge">2</span>
@@ -191,7 +176,7 @@
                         Текст / макет вывески
                     </h2>
                     <p class="text-xs text-gray-500">
-                        Прикрепите готовый логотип/макет или введите текст вывески
+                        Прикрепите макет/логотип или введите текст вывески
                     </p>
                 </div>
             </div>
@@ -205,7 +190,7 @@
                     type="file"
                     id="signFile"
                     name="signFile"
-                    accept="image/jpeg, image/png, image/svg+xml"
+                    accept="image/*,image/svg+xml"
                     class="w-full text-sm text-gray-500
                            file:mr-4 file:py-2 file:px-4
                            file:rounded-md file:border-0
@@ -214,7 +199,7 @@
                            hover:file:bg-red-100"
                 >
                 <p class="mt-1 text-xs text-gray-400">
-                    Если у вас уже есть логотип или макет — прикрепите его. Если нет, просто введите текст ниже.
+                    Если макета нет, просто введите текст ниже.
                 </p>
             </div>
 
@@ -233,15 +218,15 @@
                     placeholder="Например: Супермаркет «Продукты 24»"
                 >
                 <p class="mt-1 text-xs text-gray-400">
-                    Этот текст будет использоваться в макетах и сразу подставится в примеры шрифтов ниже.
+                    Этот текст подставится в примеры шрифтов ниже.
                 </p>
             </div>
 
-            <!-- Шрифты: 4 варианта с живым текстом -->
+            <!-- Шрифты -->
             <div class="space-y-3">
                 <p class="text-sm font-medium text-gray-700">Какой характер шрифта вам ближе?</p>
                 <p class="text-xs text-gray-500">
-                    Ниже один и тот же текст показан в четырёх вариантах. На десктопе они идут в одну линию.
+                    Один и тот же текст в четырёх вариантах. На десктопе — в одну строку.
                 </p>
 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mt-2">
@@ -256,7 +241,7 @@
                         >
                         <div class="font-preview-card peer-checked:border-red-500 peer-checked:bg-rose-50">
                             <div class="font-label mb-1">
-                                Шрифт 1 • Жирный, рубленый
+                                Шрифт 1 • Жирный
                             </div>
                             <div class="preview-text font-impact js-sign-preview">
                                 Пример текста вывески
@@ -276,7 +261,7 @@
                         >
                         <div class="font-preview-card peer-checked:border-red-500 peer-checked:bg-rose-50">
                             <div class="font-label mb-1">
-                                Шрифт 2 • Аккуратный, читаемый
+                                Шрифт 2 • Читаемый
                             </div>
                             <div class="preview-text font-verdana js-sign-preview">
                                 Пример текста вывески
@@ -295,7 +280,7 @@
                         >
                         <div class="font-preview-card peer-checked:border-red-500 peer-checked:bg-rose-50">
                             <div class="font-label mb-1">
-                                Шрифт 3 • Строгий, с засечками
+                                Шрифт 3 • С засечками
                             </div>
                             <div class="preview-text font-georgia js-sign-preview">
                                 Пример текста вывески
@@ -314,7 +299,7 @@
                         >
                         <div class="font-preview-card peer-checked:border-red-500 peer-checked:bg-rose-50">
                             <div class="font-label mb-1">
-                                Шрифт 4 • Нейтральный, универсальный
+                                Шрифт 4 • Нейтральный
                             </div>
                             <div class="preview-text font-arial js-sign-preview">
                                 Пример текста вывески
@@ -344,120 +329,72 @@
             </p>
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
-                <!-- Чёрный -->
                 <label class="flex items-center cursor-pointer">
-                    <input
-                        id="colorBlack"
-                        name="colors"
-                        type="checkbox"
-                        value="black"
-                        class="h-4 w-4 text-red-600 focus:ring-red-500"
-                    >
+                    <input id="colorBlack" name="colors" type="checkbox" value="black"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
                     <span class="ml-2 flex items-center gap-2">
                         <span class="color-option bg-black"></span>
                         <span class="color-label">Чёрный</span>
                     </span>
                 </label>
 
-                <!-- Белый -->
                 <label class="flex items-center cursor-pointer">
-                    <input
-                        id="colorWhite"
-                        name="colors"
-                        type="checkbox"
-                        value="white"
-                        class="h-4 w-4 text-red-600 focus:ring-red-500"
-                    >
+                    <input id="colorWhite" name="colors" type="checkbox" value="white"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
                     <span class="ml-2 flex items-center gap-2">
                         <span class="color-option bg-white"></span>
                         <span class="color-label">Белый</span>
                     </span>
                 </label>
 
-                <!-- Красный -->
                 <label class="flex items-center cursor-pointer">
-                    <input
-                        id="colorRed"
-                        name="colors"
-                        type="checkbox"
-                        value="red"
-                        class="h-4 w-4 text-red-600 focus:ring-red-500"
-                    >
+                    <input id="colorRed" name="colors" type="checkbox" value="red"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
                     <span class="ml-2 flex items-center gap-2">
                         <span class="color-option" style="background-color:#ef4444;"></span>
                         <span class="color-label">Красный</span>
                     </span>
                 </label>
 
-                <!-- Оранжевый -->
                 <label class="flex items-center cursor-pointer">
-                    <input
-                        id="colorOrange"
-                        name="colors"
-                        type="checkbox"
-                        value="orange"
-                        class="h-4 w-4 text-red-600 focus:ring-red-500"
-                    >
+                    <input id="colorOrange" name="colors" type="checkbox" value="orange"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
                     <span class="ml-2 flex items-center gap-2">
                         <span class="color-option" style="background-color:#fb923c;"></span>
                         <span class="color-label">Оранжевый</span>
                     </span>
                 </label>
 
-                <!-- Жёлтый -->
                 <label class="flex items-center cursor-pointer">
-                    <input
-                        id="colorYellow"
-                        name="colors"
-                        type="checkbox"
-                        value="yellow"
-                        class="h-4 w-4 text-red-600 focus:ring-red-500"
-                    >
+                    <input id="colorYellow" name="colors" type="checkbox" value="yellow"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
                     <span class="ml-2 flex items-center gap-2">
                         <span class="color-option" style="background-color:#facc15;"></span>
                         <span class="color-label">Жёлтый</span>
                     </span>
                 </label>
 
-                <!-- Зелёный -->
                 <label class="flex items-center cursor-pointer">
-                    <input
-                        id="colorGreen"
-                        name="colors"
-                        type="checkbox"
-                        value="green"
-                        class="h-4 w-4 text-red-600 focus:ring-red-500"
-                    >
+                    <input id="colorGreen" name="colors" type="checkbox" value="green"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
                     <span class="ml-2 flex items-center gap-2">
                         <span class="color-option" style="background-color:#22c55e;"></span>
                         <span class="color-label">Зелёный</span>
                     </span>
                 </label>
 
-                <!-- Синий -->
                 <label class="flex items-center cursor-pointer">
-                    <input
-                        id="colorBlue"
-                        name="colors"
-                        type="checkbox"
-                        value="blue"
-                        class="h-4 w-4 text-red-600 focus:ring-red-500"
-                    >
+                    <input id="colorBlue" name="colors" type="checkbox" value="blue"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
                     <span class="ml-2 flex items-center gap-2">
                         <span class="color-option" style="background-color:#3b82f6;"></span>
                         <span class="color-label">Синий</span>
                     </span>
                 </label>
 
-                <!-- Фиолетовый -->
                 <label class="flex items-center cursor-pointer">
-                    <input
-                        id="colorPurple"
-                        name="colors"
-                        type="checkbox"
-                        value="purple"
-                        class="h-4 w-4 text-red-600 focus:ring-red-500"
-                    >
+                    <input id="colorPurple" name="colors" type="checkbox" value="purple"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
                     <span class="ml-2 flex items-center gap-2">
                         <span class="color-option" style="background-color:#a855f7;"></span>
                         <span class="color-label">Фиолетовый</span>
@@ -479,9 +416,6 @@
                            text-sm"
                     placeholder="Например: золотые буквы на тёмном графитовом фоне"
                 >
-                <p class="mt-1 text-xs text-gray-400">
-                    Можно описать оттенки, сочетания, фон и т.п.
-                </p>
             </div>
         </section>
 
@@ -501,58 +435,32 @@
 
             <div class="space-y-2">
                 <label class="flex items-center cursor-pointer">
-                    <input
-                        id="signType1"
-                        name="signType"
-                        type="radio"
-                        value="lightbox"
-                        class="h-4 w-4 text-red-600 focus:ring-red-500"
-                        required
-                    >
+                    <input id="signType1" name="signType" type="radio" value="lightbox"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500" required>
                     <span class="ml-3 text-sm text-gray-700">Световой короб</span>
                 </label>
 
                 <label class="flex items-center cursor-pointer">
-                    <input
-                        id="signType2"
-                        name="signType"
-                        type="radio"
-                        value="dimensional-letters"
-                        class="h-4 w-4 text-red-600 focus:ring-red-500"
-                    >
+                    <input id="signType2" name="signType" type="radio" value="dimensional-letters"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
                     <span class="ml-3 text-sm text-gray-700">Объёмные буквы</span>
                 </label>
 
                 <label class="flex items-center cursor-pointer">
-                    <input
-                        id="signType3"
-                        name="signType"
-                        type="radio"
-                        value="neon"
-                        class="h-4 w-4 text-red-600 focus:ring-red-500"
-                    >
+                    <input id="signType3" name="signType" type="radio" value="neon"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
                     <span class="ml-3 text-sm text-gray-700">Неоновая вывеска</span>
                 </label>
 
                 <label class="flex items-center cursor-pointer">
-                    <input
-                        id="signType4"
-                        name="signType"
-                        type="radio"
-                        value="composite-box"
-                        class="h-4 w-4 text-red-600 focus:ring-red-500"
-                    >
+                    <input id="signType4" name="signType" type="radio" value="composite-box"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
                     <span class="ml-3 text-sm text-gray-700">Композитный короб</span>
                 </label>
 
                 <label class="flex items-center cursor-pointer">
-                    <input
-                        id="signType5"
-                        name="signType"
-                        type="radio"
-                        value="metal-letters"
-                        class="h-4 w-4 text-red-600 focus:ring-red-500"
-                    >
+                    <input id="signType5" name="signType" type="radio" value="metal-letters"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
                     <span class="ml-3 text-sm text-gray-700">Металлические буквы</span>
                 </label>
             </div>
@@ -576,7 +484,7 @@
     </div>
 
     <script>
-        // URL бэкенда, который кладёт файлы в S3 и возвращает S3-ключи
+        // ===== КОНФИГ: URL сервера на Railway, который грузит в S3 =====
         const UPLOAD_URL = 'https://YOUR-RAILWAY-APP-DOMAIN/upload'; // замени на свой домен
 
         // LIVE-превью текста во всех шрифтах
@@ -587,9 +495,7 @@
             function updatePreviews() {
                 const value = (signTextInput.value || '').trim();
                 const text = value || 'Пример текста вывески';
-                previewEls.forEach(el => {
-                    el.textContent = text;
-                });
+                previewEls.forEach(el => { el.textContent = text; });
             }
 
             if (signTextInput) {
@@ -598,20 +504,21 @@
             }
         })();
 
-        // Клик по кнопке "Отправить бриф" — сначала грузим файлы на бэкенд/S3, потом шлём данные в бота
+        // Отправка брифа
         document.getElementById('submitButton').addEventListener('click', async function () {
-            const colors = Array.from(document.querySelectorAll('input[name="colors"]:checked'))
-                .map(el => el.value);
-
-            const signText = document.getElementById('signText').value || null;
-            const fontChoice = document.querySelector('input[name="fontChoice"]:checked')?.value || null;
-            const colorsText = document.getElementById('colorsText').value || null;
-            const signType = document.querySelector('input[name="signType"]:checked')?.value || null;
-
             const facadeFile = document.getElementById('facadePhoto').files[0] || null;
-            const signFile = document.getElementById('signFile').files[0] || null;
+            const signFile   = document.getElementById('signFile').files[0]   || null;
 
-            // простая валидация
+            const signText   = document.getElementById('signText').value || null;
+            const fontChoice = document.querySelector('input[name="fontChoice"]:checked')?.value || null;
+            const colors     = Array.from(document.querySelectorAll('input[name="colors"]:checked')).map(el => el.value);
+            const colorsText = document.getElementById('colorsText').value || null;
+            const signType   = document.querySelector('input[name="signType"]:checked')?.value || null;
+
+            if (!facadeFile) {
+                alert('Загрузите фото фасада.');
+                return;
+            }
             if (!signType) {
                 alert('Пожалуйста, выберите тип вывески.');
                 return;
@@ -623,57 +530,54 @@
 
             const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
             const tgUserId = tg?.initDataUnsafe?.user?.id || null;
+            const chatId   = tg?.initDataUnsafe?.user?.id || null;
 
-            // формируем FormData для бэкенда (он там уже кладёт в S3 с нужным неймингом)
-            const uploadForm = new FormData();
-            if (facadeFile) uploadForm.append('facadePhoto', facadeFile);
-            if (signFile) uploadForm.append('signFile', signFile);
-            if (signText) uploadForm.append('signText', signText);
-            if (signType) uploadForm.append('signType', signType);
-            if (fontChoice) uploadForm.append('fontChoice', fontChoice);
-            if (colors && colors.length) uploadForm.append('colors', JSON.stringify(colors));
-            if (colorsText) uploadForm.append('colorsText', colorsText);
-            if (tgUserId) uploadForm.append('tgUserId', String(tgUserId));
+            // 1) Шлём файлы и параметры на бэкенд → он кладёт в S3 и вернёт имена файлов
+            const formData = new FormData();
+            formData.append('facadePhoto', facadeFile);
+            if (signFile) formData.append('signFile', signFile);
 
-            let uploadResult = {
-                facadePhotoKey: null,
-                signFileKey: null,
-                projectId: null,
-            };
+            if (tgUserId) formData.append('tgUserId', String(tgUserId));
+            if (chatId)   formData.append('chatId',   String(chatId));
 
-            if (UPLOAD_URL && UPLOAD_URL.startsWith('http')) {
-                try {
-                    const resp = await fetch(UPLOAD_URL, {
-                        method: 'POST',
-                        body: uploadForm,
-                    });
-                    if (!resp.ok) {
-                        console.error('Upload error status:', resp.status);
-                    } else {
-                        const data = await resp.json();
-                        uploadResult = {
-                            facadePhotoKey: data.facadePhotoKey || null,
-                            signFileKey: data.signFileKey || null,
-                            projectId: data.projectId || null,
-                        };
-                    }
-                } catch (e) {
-                    console.error('Upload failed:', e);
+            if (signText)   formData.append('signText',   signText);
+            if (fontChoice) formData.append('fontChoice', fontChoice);
+            if (signType)   formData.append('signType',   signType);
+            if (colors && colors.length) formData.append('colors', JSON.stringify(colors));
+            if (colorsText) formData.append('colorsText', colorsText);
+
+            let uploadResult;
+            try {
+                const resp = await fetch(UPLOAD_URL, {
+                    method: 'POST',
+                    body: formData,
+                });
+                if (!resp.ok) {
+                    console.error('Upload error:', resp.status);
+                    alert('Ошибка загрузки файлов. Попробуйте ещё раз.');
+                    return;
                 }
+                uploadResult = await resp.json();
+            } catch (err) {
+                console.error('Upload failed:', err);
+                alert('Ошибка соединения с сервером. Попробуйте ещё раз.');
+                return;
             }
 
+            // ожидаем, что сервер вернёт:
+            // { projectId, facadeKey, signKey }
             const payload = {
-                // S3-ключи, созданные бэкендом с нужным неймингом
-                facadePhotoKey: uploadResult.facadePhotoKey,
-                signFileKey: uploadResult.signFileKey,
-                projectId: uploadResult.projectId,
+                projectId: uploadResult.projectId || null,
+                facadeKey: uploadResult.facadeKey || null, // FACADE_YYYYMMDD_ID.ext
+                signKey:   uploadResult.signKey   || null, // SIGN_YYYYMMDD_ID.ext
 
-                // остальная логика брифа
                 signText,
                 fontChoice,
                 colors,
                 colorsText,
                 signType,
+                tgUserId,
+                chatId
             };
 
             if (tg) {
@@ -681,7 +585,7 @@
                 tg.close();
             } else {
                 console.log('Payload to bot:', payload);
-                alert('Бриф отправлен (тестовый режим, вне Telegram).');
+                alert('Бриф отправлен (тестовый режим).');
             }
         });
 
