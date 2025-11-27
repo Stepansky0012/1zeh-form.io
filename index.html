@@ -208,7 +208,7 @@
                 <label for="signText" class="block text-sm font-medium text-gray-700">
                     Текст вывески
                 </label>
-                <input
+            <input
                     type="text"
                     id="signText"
                     name="signText"
@@ -484,7 +484,7 @@
     </div>
 
     <script>
-        // превью текста во всех шрифтах
+        // LIVE-превью текста во всех шрифтах
         (function () {
             const signTextInput = document.getElementById('signText');
             const previewEls = document.querySelectorAll('.js-sign-preview');
@@ -501,30 +501,24 @@
             }
         })();
 
-        // файл → base64 (+метаданные)
-        function readFileAsBase64(file) {
+        // helper: file -> base64 (без префикса data:...;base64,)
+        function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = () => {
                     const result = reader.result;
-                    let base64 = result;
                     if (typeof result === 'string') {
-                        const idx = result.indexOf(',');
-                        base64 = idx !== -1 ? result.slice(idx + 1) : result;
+                        const base64 = result.split(',')[1] || '';
+                        resolve(base64);
+                    } else {
+                        resolve(null);
                     }
-                    resolve({
-                        name: file.name,
-                        mimeType: file.type,
-                        size: file.size,
-                        base64: base64,
-                    });
                 };
                 reader.onerror = () => reject(reader.error);
                 reader.readAsDataURL(file);
             });
         }
 
-        // отправка брифа в Telegram (web_app_data.data)
         document.getElementById('submitButton').addEventListener('click', async function () {
             const facadeFile = document.getElementById('facadePhoto').files[0] || null;
             const signFile   = document.getElementById('signFile').files[0]   || null;
@@ -548,43 +542,55 @@
                 return;
             }
 
+            let facadeBase64 = null;
+            let signBase64   = null;
+
+            try {
+                facadeBase64 = await fileToBase64(facadeFile);
+                if (signFile) {
+                    signBase64 = await fileToBase64(signFile);
+                }
+            } catch (e) {
+                console.error('Ошибка чтения файлов:', e);
+                alert('Не удалось прочитать файлы. Попробуйте ещё раз.');
+                return;
+            }
+
+            const facadePayload = facadeBase64 ? {
+                name: facadeFile.name,
+                type: facadeFile.type,
+                size: facadeFile.size,
+                base64: facadeBase64,
+            } : null;
+
+            const signPayload = signBase64 ? {
+                name: signFile.name,
+                type: signFile.type,
+                size: signFile.size,
+                base64: signBase64,
+            } : null;
+
             const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
             const tgUserId = tg?.initDataUnsafe?.user?.id || null;
             const chatId   = tg?.initDataUnsafe?.user?.id || null;
 
-            let facadePhotoData = null;
-            let signFileData    = null;
-
-            try {
-                if (facadeFile) {
-                    facadePhotoData = await readFileAsBase64(facadeFile);
-                }
-                if (signFile) {
-                    signFileData = await readFileAsBase64(signFile);
-                }
-            } catch (e) {
-                console.error('Ошибка чтения файлов', e);
-                alert('Не удалось прочитать файлы. Попробуйте другое изображение.');
-                return;
-            }
-
             const payload = {
-                facadePhoto: facadePhotoData, // {name, mimeType, size, base64} | null
-                signFile:    signFileData,    // {name, mimeType, size, base64} | null
+                facadeFile: facadePayload,
+                signFile:   signPayload,
                 signText,
                 fontChoice,
                 colors,
                 colorsText,
                 signType,
                 tgUserId,
-                chatId
+                chatId,
             };
 
             if (tg) {
                 tg.sendData(JSON.stringify(payload));
                 tg.close();
             } else {
-                console.log('Payload to bot:', payload);
+                console.log('Payload to bot (test mode):', payload);
                 alert('Бриф отправлен (тестовый режим, вне Telegram).');
             }
         });
