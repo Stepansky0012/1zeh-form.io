@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    <!-- TODO: замени font-family на тот, что реально используется на 1zeh.ru -->
     <style>
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -50,7 +49,7 @@
             background-color: #f9fafb;
             transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
             cursor: pointer;
-            min-height: 96px; /* больше воздуха для текста */
+            min-height: 96px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -120,7 +119,7 @@
             </p>
         </header>
 
-        <!-- Прогресс по шагам (виден и на мобиле, и на десктопе) -->
+        <!-- Прогресс по шагам -->
         <div class="section-card !py-3 !px-4 flex flex-wrap items-center gap-3 text-xs text-gray-500">
             <div class="flex items-center gap-2">
                 <span class="step-badge">1</span>
@@ -238,12 +237,11 @@
                 </p>
             </div>
 
-            <!-- Шрифты: 4 варианта с живым текстом (горизонтально на десктопе) -->
+            <!-- Шрифты: 4 варианта с живым текстом -->
             <div class="space-y-3">
                 <p class="text-sm font-medium text-gray-700">Какой характер шрифта вам ближе?</p>
                 <p class="text-xs text-gray-500">
-                    Ниже один и тот же текст показан в четырёх вариантах. На десктопе они идут в одну линию,
-                    чтобы можно было сравнить их рядом.
+                    Ниже один и тот же текст показан в четырёх вариантах. На десктопе они идут в одну линию.
                 </p>
 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mt-2">
@@ -578,7 +576,10 @@
     </div>
 
     <script>
-        // LIVE-превью текста вывески во всех четырёх шрифтах
+        // URL бэкенда, который кладёт файлы в S3 и возвращает S3-ключи
+        const UPLOAD_URL = 'https://YOUR-RAILWAY-APP-DOMAIN/upload'; // замени на свой домен
+
+        // LIVE-превью текста во всех шрифтах
         (function () {
             const signTextInput = document.getElementById('signText');
             const previewEls = document.querySelectorAll('.js-sign-preview');
@@ -597,43 +598,95 @@
             }
         })();
 
-        // Сбор данных и отправка в Telegram WebApp
-        document.getElementById('submitButton').addEventListener('click', function () {
+        // Клик по кнопке "Отправить бриф" — сначала грузим файлы на бэкенд/S3, потом шлём данные в бота
+        document.getElementById('submitButton').addEventListener('click', async function () {
             const colors = Array.from(document.querySelectorAll('input[name="colors"]:checked'))
                 .map(el => el.value);
 
-            const formData = {
-                facadePhoto: document.getElementById('facadePhoto').files[0]?.name || null,
-                signFile: document.getElementById('signFile').files[0]?.name || null,
-                signText: document.getElementById('signText').value || null,
-                fontChoice: document.querySelector('input[name="fontChoice"]:checked')?.value || null,
-                colors,
-                colorsText: document.getElementById('colorsText').value || null,
-                signType: document.querySelector('input[name="signType"]:checked')?.value || null
-            };
+            const signText = document.getElementById('signText').value || null;
+            const fontChoice = document.querySelector('input[name="fontChoice"]:checked')?.value || null;
+            const colorsText = document.getElementById('colorsText').value || null;
+            const signType = document.querySelector('input[name="signType"]:checked')?.value || null;
 
-            // Минимальная валидация
-            if (!formData.signType) {
+            const facadeFile = document.getElementById('facadePhoto').files[0] || null;
+            const signFile = document.getElementById('signFile').files[0] || null;
+
+            // простая валидация
+            if (!signType) {
                 alert('Пожалуйста, выберите тип вывески.');
                 return;
             }
-            if (!formData.signFile && !formData.signText) {
+            if (!signFile && !signText) {
                 alert('Добавьте логотип/макет или введите текст вывески.');
                 return;
             }
 
-            if (window.Telegram && window.Telegram.WebApp) {
-                Telegram.WebApp.sendData(JSON.stringify(formData));
-                Telegram.WebApp.close();
+            const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+            const tgUserId = tg?.initDataUnsafe?.user?.id || null;
+
+            // формируем FormData для бэкенда (он там уже кладёт в S3 с нужным неймингом)
+            const uploadForm = new FormData();
+            if (facadeFile) uploadForm.append('facadePhoto', facadeFile);
+            if (signFile) uploadForm.append('signFile', signFile);
+            if (signText) uploadForm.append('signText', signText);
+            if (signType) uploadForm.append('signType', signType);
+            if (fontChoice) uploadForm.append('fontChoice', fontChoice);
+            if (colors && colors.length) uploadForm.append('colors', JSON.stringify(colors));
+            if (colorsText) uploadForm.append('colorsText', colorsText);
+            if (tgUserId) uploadForm.append('tgUserId', String(tgUserId));
+
+            let uploadResult = {
+                facadePhotoKey: null,
+                signFileKey: null,
+                projectId: null,
+            };
+
+            if (UPLOAD_URL && UPLOAD_URL.startsWith('http')) {
+                try {
+                    const resp = await fetch(UPLOAD_URL, {
+                        method: 'POST',
+                        body: uploadForm,
+                    });
+                    if (!resp.ok) {
+                        console.error('Upload error status:', resp.status);
+                    } else {
+                        const data = await resp.json();
+                        uploadResult = {
+                            facadePhotoKey: data.facadePhotoKey || null,
+                            signFileKey: data.signFileKey || null,
+                            projectId: data.projectId || null,
+                        };
+                    }
+                } catch (e) {
+                    console.error('Upload failed:', e);
+                }
+            }
+
+            const payload = {
+                // S3-ключи, созданные бэкендом с нужным неймингом
+                facadePhotoKey: uploadResult.facadePhotoKey,
+                signFileKey: uploadResult.signFileKey,
+                projectId: uploadResult.projectId,
+
+                // остальная логика брифа
+                signText,
+                fontChoice,
+                colors,
+                colorsText,
+                signType,
+            };
+
+            if (tg) {
+                tg.sendData(JSON.stringify(payload));
+                tg.close();
             } else {
-                console.log('Form data:', formData);
-                alert('Бриф успешно отправлен! (тестовый режим, вне Telegram)');
+                console.log('Payload to bot:', payload);
+                alert('Бриф отправлен (тестовый режим, вне Telegram).');
             }
         });
 
-        // Разворачиваем WebApp на полный экран, если в Telegram
         if (window.Telegram && window.Telegram.WebApp) {
-            Telegram.WebApp.expand();
+            window.Telegram.WebApp.expand();
         }
     </script>
 </body>
