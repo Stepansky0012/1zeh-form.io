@@ -208,7 +208,7 @@
                 <label for="signText" class="block text-sm font-medium text-gray-700">
                     Текст вывески
                 </label>
-            <input
+                <input
                     type="text"
                     id="signText"
                     name="signText"
@@ -486,13 +486,15 @@
     <script>
         // LIVE-превью текста во всех шрифтах
         (function () {
-            const signTextInput = document.getElementById('signText');
-            const previewEls = document.querySelectorAll('.js-sign-preview');
+            var signTextInput = document.getElementById('signText');
+            var previewEls = document.querySelectorAll('.js-sign-preview');
 
             function updatePreviews() {
-                const value = (signTextInput.value || '').trim();
-                const text = value || 'Пример текста вывески';
-                previewEls.forEach(el => { el.textContent = text; });
+                var value = (signTextInput.value || '').trim();
+                var text = value || 'Пример текста вывески';
+                for (var i = 0; i < previewEls.length; i++) {
+                    previewEls[i].textContent = text;
+                }
             }
 
             if (signTextInput) {
@@ -501,34 +503,32 @@
             }
         })();
 
-        // helper: file -> base64 (без префикса data:...;base64,)
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const result = reader.result;
-                    if (typeof result === 'string') {
-                        const base64 = result.split(',')[1] || '';
-                        resolve(base64);
-                    } else {
-                        resolve(null);
-                    }
-                };
-                reader.onerror = () => reject(reader.error);
-                reader.readAsDataURL(file);
-            });
-        }
+        document.getElementById('submitButton').addEventListener('click', function () {
+            var facadeFileInput = document.getElementById('facadePhoto');
+            var signFileInput   = document.getElementById('signFile');
 
-        document.getElementById('submitButton').addEventListener('click', async function () {
-            const facadeFile = document.getElementById('facadePhoto').files[0] || null;
-            const signFile   = document.getElementById('signFile').files[0]   || null;
+            var facadeFile = facadeFileInput && facadeFileInput.files[0] ? facadeFileInput.files[0] : null;
+            var signFile   = signFileInput && signFileInput.files[0]   ? signFileInput.files[0]   : null;
 
-            const signText   = document.getElementById('signText').value || null;
-            const fontChoice = document.querySelector('input[name="fontChoice"]:checked')?.value || null;
-            const colors     = Array.from(document.querySelectorAll('input[name="colors"]:checked')).map(el => el.value);
-            const colorsText = document.getElementById('colorsText').value || null;
-            const signType   = document.querySelector('input[name="signType"]:checked')?.value || null;
+            var signTextInput = document.getElementById('signText');
+            var signText = signTextInput && signTextInput.value ? signTextInput.value : null;
 
+            var fontChoiceInput = document.querySelector('input[name="fontChoice"]:checked');
+            var fontChoice = fontChoiceInput ? fontChoiceInput.value : null;
+
+            var colorCheckboxes = document.querySelectorAll('input[name="colors"]:checked');
+            var colors = [];
+            for (var i = 0; i < colorCheckboxes.length; i++) {
+                colors.push(colorCheckboxes[i].value);
+            }
+
+            var colorsTextInput = document.getElementById('colorsText');
+            var colorsText = colorsTextInput && colorsTextInput.value ? colorsTextInput.value : null;
+
+            var signTypeInput = document.querySelector('input[name="signType"]:checked');
+            var signType = signTypeInput ? signTypeInput.value : null;
+
+            // Валидация
             if (!facadeFile) {
                 alert('Загрузите фото фасада.');
                 return;
@@ -542,57 +542,89 @@
                 return;
             }
 
-            let facadeBase64 = null;
-            let signBase64   = null;
+            // Telegram WebApp объект
+            var tg = null;
+            var tgUserId = null;
+            var chatId = null;
 
-            try {
-                facadeBase64 = await fileToBase64(facadeFile);
-                if (signFile) {
-                    signBase64 = await fileToBase64(signFile);
+            if (window.Telegram && window.Telegram.WebApp) {
+                tg = window.Telegram.WebApp;
+                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    tgUserId = tg.initDataUnsafe.user.id;
+                    chatId = tg.initDataUnsafe.user.id;
                 }
-            } catch (e) {
-                console.error('Ошибка чтения файлов:', e);
-                alert('Не удалось прочитать файлы. Попробуйте ещё раз.');
-                return;
             }
 
-            const facadePayload = facadeBase64 ? {
-                name: facadeFile.name,
-                type: facadeFile.type,
-                size: facadeFile.size,
-                base64: facadeBase64,
-            } : null;
+            var facadeBase64 = null;
+            var signBase64 = null;
 
-            const signPayload = signBase64 ? {
-                name: signFile.name,
-                type: signFile.type,
-                size: signFile.size,
-                base64: signBase64,
-            } : null;
+            function finishSend() {
+                var facadePayload = facadeBase64 ? {
+                    name: facadeFile.name,
+                    type: facadeFile.type,
+                    size: facadeFile.size,
+                    base64: facadeBase64
+                } : null;
 
-            const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-            const tgUserId = tg?.initDataUnsafe?.user?.id || null;
-            const chatId   = tg?.initDataUnsafe?.user?.id || null;
+                var signPayload = (signFile && signBase64) ? {
+                    name: signFile.name,
+                    type: signFile.type,
+                    size: signFile.size,
+                    base64: signBase64
+                } : null;
 
-            const payload = {
-                facadeFile: facadePayload,
-                signFile:   signPayload,
-                signText,
-                fontChoice,
-                colors,
-                colorsText,
-                signType,
-                tgUserId,
-                chatId,
+                var payload = {
+                    facadeFile: facadePayload,
+                    signFile:   signPayload,
+                    signText:   signText,
+                    fontChoice: fontChoice,
+                    colors:     colors,
+                    colorsText: colorsText,
+                    signType:   signType,
+                    tgUserId:   tgUserId,
+                    chatId:     chatId
+                };
+
+                if (tg) {
+                    tg.sendData(JSON.stringify(payload));
+                    tg.close();
+                } else {
+                    console.log('Payload to bot (test mode):', payload);
+                    alert('Бриф отправлен (тестовый режим, вне Telegram).');
+                }
+            }
+
+            // читаем фасад, потом (если есть) вывеску
+            var reader1 = new FileReader();
+            reader1.onload = function () {
+                var result1 = reader1.result;
+                if (typeof result1 === 'string') {
+                    var parts1 = result1.split(',');
+                    facadeBase64 = parts1.length > 1 ? parts1[1] : '';
+                }
+
+                if (signFile) {
+                    var reader2 = new FileReader();
+                    reader2.onload = function () {
+                        var result2 = reader2.result;
+                        if (typeof result2 === 'string') {
+                            var parts2 = result2.split(',');
+                            signBase64 = parts2.length > 1 ? parts2[1] : '';
+                        }
+                        finishSend();
+                    };
+                    reader2.onerror = function () {
+                        alert('Не удалось прочитать файл вывески.');
+                    };
+                    reader2.readAsDataURL(signFile);
+                } else {
+                    finishSend();
+                }
             };
-
-            if (tg) {
-                tg.sendData(JSON.stringify(payload));
-                tg.close();
-            } else {
-                console.log('Payload to bot (test mode):', payload);
-                alert('Бриф отправлен (тестовый режим, вне Telegram).');
-            }
+            reader1.onerror = function () {
+                alert('Не удалось прочитать фото фасада.');
+            };
+            reader1.readAsDataURL(facadeFile);
         });
 
         if (window.Telegram && window.Telegram.WebApp) {
