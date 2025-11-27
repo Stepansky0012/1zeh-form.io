@@ -1,589 +1,74 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Бриф на вывеску | Первый Цех</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-    <style>
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background-color: #f3f4f6;
-        }
-
-        .brand-red { background-color: #ef4444; }
-        .brand-red:hover { background-color: #dc2626; }
-
-        .section-card {
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
-            padding: 1.5rem;
-        }
-
-        .step-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 1.5rem;
-            height: 1.5rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #ffffff;
-            background-color: #ef4444;
-            flex-shrink: 0;
-        }
-
-        .font-preview-card {
-            border-radius: 0.75rem;
-            border: 1px solid #e5e7eb;
-            padding: 0.9rem 1rem;
-            background-color: #f9fafb;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-            cursor: pointer;
-            min-height: 96px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .font-preview-card:hover {
-            border-color: #ef4444;
-            box-shadow: 0 6px 16px rgba(248, 113, 113, 0.18);
-            background-color: #fef2f2;
-        }
-
-        .font-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #6b7280;
-        }
-
-        .font-impact  { font-family: Impact, Haettenschweiler, "Arial Narrow Bold", system-ui, sans-serif; }
-        .font-verdana { font-family: Verdana, system-ui, sans-serif; }
-        .font-georgia { font-family: Georgia, "Times New Roman", serif; }
-        .font-arial   { font-family: Arial, system-ui, sans-serif; }
-
-        .preview-text {
-            font-size: 1.05rem;
-            line-height: 1.3;
-            word-break: break-word;
-        }
-
-        .color-option {
-            width: 22px;
-            height: 22px;
-            border-radius: 9999px;
-            display: inline-block;
-            border: 1px solid rgba(148, 163, 184, 0.4);
-        }
-
-        .color-label { font-size: 0.875rem; color: #374151; }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Форма с загрузкой изображения</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
-<body class="min-h-screen pb-24">
-    <div class="container mx-auto px-4 py-6 max-w-2xl space-y-6">
+<body>
+  <h1>Загрузка заявки</h1>
 
-        <!-- Header -->
-        <header class="space-y-2">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-gray-200 shadow-sm">
-                <span class="w-2 h-2 rounded-full bg-red-500"></span>
-                <span class="text-xs font-medium uppercase tracking-wide text-gray-500">
-                    Первый Цех • AI-вывески
-                </span>
-            </div>
-            <h1 class="text-2xl font-semibold text-gray-900 mt-2">
-                Бриф на разработку вывески
-            </h1>
-            <p class="text-sm text-gray-600">
-                Заполните короткую форму — по этим данным мы подготовим варианты вывесок на основе фото вашего фасада.
-            </p>
-        </header>
+  <form id="uploadForm">
+    <label>
+      Имя:
+      <input type="text" name="name" required />
+    </label>
+    <br /><br />
 
-        <!-- Прогресс по шагам -->
-        <div class="section-card !py-3 !px-4 flex flex-wrap items-center gap-3 text-xs text-gray-500">
-            <div class="flex items-center gap-2">
-                <span class="step-badge">1</span>
-                <span>Фото фасада</span>
-            </div>
-            <span class="text-gray-400">→</span>
-            <div class="flex items-center gap-2">
-                <span class="step-badge">2</span>
-                <span>Текст / макет вывески</span>
-            </div>
-            <span class="text-gray-400">→</span>
-            <div class="flex items-center gap-2">
-                <span class="step-badge">3</span>
-                <span>Цвет вывески</span>
-            </div>
-            <span class="text-gray-400">→</span>
-            <div class="flex items-center gap-2">
-                <span class="step-badge">4</span>
-                <span>Тип вывески</span>
-            </div>
-        </div>
+    <label>
+      Комментарий:
+      <textarea name="comment"></textarea>
+    </label>
+    <br /><br />
 
-        <!-- Шаг 1: Фото фасада -->
-        <section class="section-card space-y-4">
-            <div class="flex items-center gap-3">
-                <span class="step-badge">1</span>
-                <div>
-                    <h2 class="text-sm font-semibold tracking-wide uppercase text-gray-700">
-                        Фото фасада
-                    </h2>
-                    <p class="text-xs text-gray-500">
-                        Главный референс, куда мы «посадим» вывеску
-                    </p>
-                </div>
-            </div>
+    <label>
+      Фото:
+      <input type="file" name="photo" accept="image/*" required />
+    </label>
+    <br /><br />
 
-            <div class="space-y-2 mt-2">
-                <label for="facadePhoto" class="block text-sm font-medium text-gray-700">
-                    Загрузите фото фасада
-                </label>
-                <p class="text-xs text-gray-500 mb-1">
-                    На фото должна быть чётко отмечена область под вывеску (рамка / маркер).
-                </p>
-                <input
-                    type="file"
-                    id="facadePhoto"
-                    name="facadePhoto"
-                    accept="image/*"
-                    required
-                    class="w-full text-sm text-gray-500
-                           file:mr-4 file:py-2 file:px-4
-                           file:rounded-md file:border-0
-                           file:text-sm file:font-medium
-                           file:bg-red-50 file:text-red-600
-                           hover:file:bg-red-100"
-                >
-                <p class="mt-1 text-xs text-gray-400">
-                    Форматы: JPEG, PNG (до 5&nbsp;МБ).
-                </p>
-            </div>
-        </section>
+    <button type="submit">Отправить</button>
+  </form>
 
-        <!-- Шаг 2: Текст / макет вывески -->
-        <section class="section-card space-y-6">
-            <div class="flex items-center gap-3">
-                <span class="step-badge">2</span>
-                <div>
-                    <h2 class="text-sm font-semibold tracking-wide uppercase text-gray-700">
-                        Текст / макет вывески
-                    </h2>
-                    <p class="text-xs text-gray-500">
-                        Прикрепите макет/логотип или введите текст вывески
-                    </p>
-                </div>
-            </div>
+  <p id="status"></p>
 
-            <!-- Файл логотипа / вывески (опционально) -->
-            <div class="space-y-2">
-                <label for="signFile" class="block text-sm font-medium text-gray-700">
-                    Логотип или готовое изображение вывески <span class="text-gray-400">(необязательно)</span>
-                </label>
-                <input
-                    type="file"
-                    id="signFile"
-                    name="signFile"
-                    accept="image/*,image/svg+xml"
-                    class="w-full text-sm text-gray-500
-                           file:mr-4 file:py-2 file:px-4
-                           file:rounded-md file:border-0
-                           file:text-sm file:font-medium
-                           file:bg-red-50 file:text-red-600
-                           hover:file:bg-red-100"
-                >
-                <p class="mt-1 text-xs text-gray-400">
-                    Если макета нет, просто введите текст ниже.
-                </p>
-            </div>
+  <script>
+    // !!! ЗДЕСЬ ТЕБЕ НУЖНО ПОДСТАВИТЬ СВОЙ URL ВЕБХУКА n8n
+    const WEBHOOK_URL = "https://primary-production-2705e.up.railway.app/webhook-test/1zeh-form";
 
-            <!-- Текст вывески -->
-            <div class="space-y-2">
-                <label for="signText" class="block text-sm font-medium text-gray-700">
-                    Текст вывески
-                </label>
-                <input
-                    type="text"
-                    id="signText"
-                    name="signText"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md
-                           focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500
-                           text-sm"
-                    placeholder="Например: Супермаркет «Продукты 24»"
-                >
-                <p class="mt-1 text-xs text-gray-400">
-                    Этот текст подставится в примеры шрифтов ниже.
-                </p>
-            </div>
+    const form = document.getElementById("uploadForm");
+    const status = document.getElementById("status");
 
-            <!-- Шрифты -->
-            <div class="space-y-3">
-                <p class="text-sm font-medium text-gray-700">Какой характер шрифта вам ближе?</p>
-                <p class="text-xs text-gray-500">
-                    Один и тот же текст в четырёх вариантах. На десктопе — в одну строку.
-                </p>
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mt-2">
-                    <!-- Font 1 -->
-                    <label class="cursor-pointer">
-                        <input
-                            id="font1"
-                            name="fontChoice"
-                            type="radio"
-                            value="bold-impact"
-                            class="hidden peer"
-                        >
-                        <div class="font-preview-card peer-checked:border-red-500 peer-checked:bg-rose-50">
-                            <div class="font-label mb-1">
-                                Шрифт 1 • Жирный
-                            </div>
-                            <div class="preview-text font-impact js-sign-preview">
-                                Пример текста вывески
-                            </div>
-                        </div>
-                    </label>
+      status.textContent = "Отправляем...";
 
-                    <!-- Font 2 -->
-                    <label class="cursor-pointer">
-                        <input
-                            id="font2"
-                            name="fontChoice"
-                            type="radio"
-                            value="clean-verdana"
-                            class="hidden peer"
-                            checked
-                        >
-                        <div class="font-preview-card peer-checked:border-red-500 peer-checked:bg-rose-50">
-                            <div class="font-label mb-1">
-                                Шрифт 2 • Читаемый
-                            </div>
-                            <div class="preview-text font-verdana js-sign-preview">
-                                Пример текста вывески
-                            </div>
-                        </div>
-                    </label>
+      const formData = new FormData(form); // сюда автоматически попадёт файл и текстовые поля
 
-                    <!-- Font 3 -->
-                    <label class="cursor-pointer">
-                        <input
-                            id="font3"
-                            name="fontChoice"
-                            type="radio"
-                            value="serif-georgia"
-                            class="hidden peer"
-                        >
-                        <div class="font-preview-card peer-checked:border-red-500 peer-checked:bg-rose-50">
-                            <div class="font-label mb-1">
-                                Шрифт 3 • С засечками
-                            </div>
-                            <div class="preview-text font-georgia js-sign-preview">
-                                Пример текста вывески
-                            </div>
-                        </div>
-                    </label>
-
-                    <!-- Font 4 -->
-                    <label class="cursor-pointer">
-                        <input
-                            id="font4"
-                            name="fontChoice"
-                            type="radio"
-                            value="neutral-arial"
-                            class="hidden peer"
-                        >
-                        <div class="font-preview-card peer-checked:border-red-500 peer-checked:bg-rose-50">
-                            <div class="font-label mb-1">
-                                Шрифт 4 • Нейтральный
-                            </div>
-                            <div class="preview-text font-arial js-sign-preview">
-                                Пример текста вывески
-                            </div>
-                        </div>
-                    </label>
-                </div>
-            </div>
-        </section>
-
-        <!-- Шаг 3: Цветовая палитра -->
-        <section class="section-card space-y-4">
-            <div class="flex items-center gap-3">
-                <span class="step-badge">3</span>
-                <div>
-                    <h2 class="text-sm font-semibold tracking-wide uppercase text-gray-700">
-                        Цвет вывески
-                    </h2>
-                    <p class="text-xs text-gray-500">
-                        Выберите цвет или сочетание цветов
-                    </p>
-                </div>
-            </div>
-
-            <p class="text-xs text-gray-500">
-                Отметьте подходящие варианты и при необходимости уточните их словами.
-            </p>
-
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
-                <label class="flex items-center cursor-pointer">
-                    <input id="colorBlack" name="colors" type="checkbox" value="black"
-                           class="h-4 w-4 text-red-600 focus:ring-red-500">
-                    <span class="ml-2 flex items-center gap-2">
-                        <span class="color-option bg-black"></span>
-                        <span class="color-label">Чёрный</span>
-                    </span>
-                </label>
-
-                <label class="flex items-center cursor-pointer">
-                    <input id="colorWhite" name="colors" type="checkbox" value="white"
-                           class="h-4 w-4 text-red-600 focus:ring-red-500">
-                    <span class="ml-2 flex items-center gap-2">
-                        <span class="color-option bg-white"></span>
-                        <span class="color-label">Белый</span>
-                    </span>
-                </label>
-
-                <label class="flex items-center cursor-pointer">
-                    <input id="colorRed" name="colors" type="checkbox" value="red"
-                           class="h-4 w-4 text-red-600 focus:ring-red-500">
-                    <span class="ml-2 flex items-center gap-2">
-                        <span class="color-option" style="background-color:#ef4444;"></span>
-                        <span class="color-label">Красный</span>
-                    </span>
-                </label>
-
-                <label class="flex items-center cursor-pointer">
-                    <input id="colorOrange" name="colors" type="checkbox" value="orange"
-                           class="h-4 w-4 text-red-600 focus:ring-red-500">
-                    <span class="ml-2 flex items-center gap-2">
-                        <span class="color-option" style="background-color:#fb923c;"></span>
-                        <span class="color-label">Оранжевый</span>
-                    </span>
-                </label>
-
-                <label class="flex items-center cursor-pointer">
-                    <input id="colorYellow" name="colors" type="checkbox" value="yellow"
-                           class="h-4 w-4 text-red-600 focus:ring-red-500">
-                    <span class="ml-2 flex items-center gap-2">
-                        <span class="color-option" style="background-color:#facc15;"></span>
-                        <span class="color-label">Жёлтый</span>
-                    </span>
-                </label>
-
-                <label class="flex items-center cursor-pointer">
-                    <input id="colorGreen" name="colors" type="checkbox" value="green"
-                           class="h-4 w-4 text-red-600 focus:ring-red-500">
-                    <span class="ml-2 flex items-center gap-2">
-                        <span class="color-option" style="background-color:#22c55e;"></span>
-                        <span class="color-label">Зелёный</span>
-                    </span>
-                </label>
-
-                <label class="flex items-center cursor-pointer">
-                    <input id="colorBlue" name="colors" type="checkbox" value="blue"
-                           class="h-4 w-4 text-red-600 focus:ring-red-500">
-                    <span class="ml-2 flex items-center gap-2">
-                        <span class="color-option" style="background-color:#3b82f6;"></span>
-                        <span class="color-label">Синий</span>
-                    </span>
-                </label>
-
-                <label class="flex items-center cursor-pointer">
-                    <input id="colorPurple" name="colors" type="checkbox" value="purple"
-                           class="h-4 w-4 text-red-600 focus:ring-red-500">
-                    <span class="ml-2 flex items-center gap-2">
-                        <span class="color-option" style="background-color:#a855f7;"></span>
-                        <span class="color-label">Фиолетовый</span>
-                    </span>
-                </label>
-            </div>
-
-            <!-- Описание цветов текстом -->
-            <div class="space-y-2 mt-3">
-                <label for="colorsText" class="block text-sm font-medium text-gray-700">
-                    Цвета словами <span class="text-gray-400">(опционально)</span>
-                </label>
-                <input
-                    type="text"
-                    id="colorsText"
-                    name="colorsText"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md
-                           focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500
-                           text-sm"
-                    placeholder="Например: золотые буквы на тёмном графитовом фоне"
-                >
-            </div>
-        </section>
-
-        <!-- Шаг 4: Тип вывески -->
-        <section class="section-card space-y-4">
-            <div class="flex items-center gap-3">
-                <span class="step-badge">4</span>
-                <div>
-                    <h2 class="text-sm font-semibold tracking-wide uppercase text-gray-700">
-                        Тип вывески
-                    </h2>
-                    <p class="text-xs text-gray-500">
-                        Выберите формат, который вам ближе
-                    </p>
-                </div>
-            </div>
-
-            <div class="space-y-2">
-                <label class="flex items-center cursor-pointer">
-                    <input id="signType1" name="signType" type="radio" value="lightbox"
-                           class="h-4 w-4 text-red-600 focus:ring-red-500" required>
-                    <span class="ml-3 text-sm text-gray-700">Световой короб</span>
-                </label>
-
-                <label class="flex items-center cursor-pointer">
-                    <input id="signType2" name="signType" type="radio" value="dimensional-letters"
-                           class="h-4 w-4 text-red-600 focus:ring-red-500">
-                    <span class="ml-3 text-sm text-gray-700">Объёмные буквы</span>
-                </label>
-
-                <label class="flex items-center cursor-pointer">
-                    <input id="signType3" name="signType" type="radio" value="neon"
-                           class="h-4 w-4 text-red-600 focus:ring-red-500">
-                    <span class="ml-3 text-sm text-gray-700">Неоновая вывеска</span>
-                </label>
-
-                <label class="flex items-center cursor-pointer">
-                    <input id="signType4" name="signType" type="radio" value="composite-box"
-                           class="h-4 w-4 text-red-600 focus:ring-red-500">
-                    <span class="ml-3 text-sm text-gray-700">Композитный короб</span>
-                </label>
-
-                <label class="flex items-center cursor-pointer">
-                    <input id="signType5" name="signType" type="radio" value="metal-letters"
-                           class="h-4 w-4 text-red-600 focus:ring-red-500">
-                    <span class="ml-3 text-sm text-gray-700">Металлические буквы</span>
-                </label>
-            </div>
-        </section>
-
-        <!-- Submit -->
-        <section class="space-y-3">
-            <p class="text-xs text-gray-400">
-                Все ответы будут переданы в бота и использованы только для подготовки вариантов вывески.
-            </p>
-            <button
-                id="submitButton"
-                type="button"
-                class="w-full brand-red text-white font-medium py-3 px-4 rounded-md
-                       hover:bg-red-600 transition duration-150
-                       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 text-sm"
-            >
-                Отправить бриф
-            </button>
-        </section>
-    </div>
-
-    <script>
-        // 1) URL вебхука n8n
-        const WEBHOOK_URL = 'https://primary-production-2705e.up.railway.app/webhook-test/1zeh-form';
-
-        // 2) Live-превью текста во всех шрифтах
-        (function () {
-            const signTextInput = document.getElementById('signText');
-            const previewEls = document.querySelectorAll('.js-sign-preview');
-
-            function updatePreviews() {
-                const value = (signTextInput.value || '').trim();
-                const text = value || 'Пример текста вывески';
-                previewEls.forEach(el => { el.textContent = text; });
-            }
-
-            if (signTextInput) {
-                signTextInput.addEventListener('input', updatePreviews);
-                updatePreviews();
-            }
-        })();
-
-        // 3) Отправка брифа: файлы -> n8n, данные -> бот
-        document.getElementById('submitButton').addEventListener('click', async function () {
-            const facadeFile = document.getElementById('facadePhoto').files[0] || null;
-            const signFile   = document.getElementById('signFile').files[0]   || null;
-
-            const signText   = document.getElementById('signText').value || null;
-            const fontChoice = document.querySelector('input[name="fontChoice"]:checked')?.value || null;
-            const colors     = Array.from(document.querySelectorAll('input[name="colors"]:checked')).map(el => el.value);
-            const colorsText = document.getElementById('colorsText').value || null;
-            const signType   = document.querySelector('input[name="signType"]:checked')?.value || null;
-
-            if (!facadeFile) {
-                alert('Загрузите фото фасада.');
-                return;
-            }
-            if (!signType) {
-                alert('Пожалуйста, выберите тип вывески.');
-                return;
-            }
-            if (!signFile && !signText) {
-                alert('Добавьте логотип/макет или введите текст вывески.');
-                return;
-            }
-
-            const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-            const tgUserId = tg?.initDataUnsafe?.user?.id || null;
-            const chatId   = tgUserId;
-
-            // --- отправляем в n8n (multipart/form-data) ---
-            const fd = new FormData();
-            fd.append('facadePhoto', facadeFile);
-            if (signFile) fd.append('signFile', signFile);
-
-            if (signText)   fd.append('signText',   signText);
-            if (fontChoice) fd.append('fontChoice', fontChoice);
-            if (signType)   fd.append('signType',   signType);
-            if (colors.length) fd.append('colors', colors.join(','));
-            if (colorsText) fd.append('colorsText', colorsText);
-
-            if (tgUserId) fd.append('tgUserId', String(tgUserId));
-            if (chatId)   fd.append('chatId',   String(chatId));
-
-            try {
-                await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    body: fd,
-                });
-                // тело ответа не читаем, чтобы не упираться в CORS
-            } catch (err) {
-                console.error('Webhook error:', err);
-                alert('Не удалось отправить данные. Попробуйте ещё раз.');
-                return;
-            }
-
-            // --- компактный JSON обратно в бота ---
-            const payload = {
-                facadeFileName: facadeFile.name,
-                signFileName: signFile ? signFile.name : null,
-                signText,
-                fontChoice,
-                colors,
-                colorsText,
-                signType,
-                tgUserId,
-                chatId,
-            };
-
-            if (tg) {
-                tg.sendData(JSON.stringify(payload));
-                tg.close();
-            } else {
-                console.log('Payload to bot:', payload);
-                alert('Бриф отправлен (тестовый режим, вне Telegram).');
-            }
+      try {
+        const response = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          body: formData, // ВАЖНО: НЕ ставим headers Content-Type — браузер сам поставит multipart/form-data
         });
 
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.expand();
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status);
         }
-    </script>
+
+        let data = null;
+        try {
+          data = await response.json();
+        } catch (e) {
+          // если n8n вернёт не JSON — просто игнорируем
+        }
+
+        status.textContent = "Успешно отправлено!";
+      } catch (error) {
+        console.error(error);
+        status.textContent = "Ошибка отправки: " + error.message;
+      }
+    });
+  </script>
 </body>
 </html>
