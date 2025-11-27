@@ -3,665 +3,587 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Первый Цех • AI-вывески</title>
+    <title>Бриф на вывеску | Первый Цех</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
     <style>
-        :root {
-            --primary-red: #dc2626;
-            --light-red: #fef2f2;
-            --dark-red: #991b1b;
-            --gray-light: #f3f4f6;
-            --gray-border: #e5e7eb;
-            --text-dark: #1f2937;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        
         body {
-            background-color: var(--gray-light);
-            color: var(--text-dark);
-            line-height: 1.5;
-            padding: 16px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: #f3f4f6;
         }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 24px;
+
+        .brand-red { background-color: #ef4444; }
+        .brand-red:hover { background-color: #dc2626; }
+
+        .section-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+            padding: 1.5rem;
         }
-        
-        .badge {
-            background: var(--primary-red);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 500;
-            display: inline-block;
-            margin-bottom: 12px;
+
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #ffffff;
+            background-color: #ef4444;
+            flex-shrink: 0;
         }
-        
-        h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        
-        .subtitle {
-            color: #6b7280;
-            font-size: 14px;
-        }
-        
-        .stepper {
+
+        .font-preview-card {
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+            padding: 0.9rem 1rem;
+            background-color: #f9fafb;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+            cursor: pointer;
+            min-height: 96px;
             display: flex;
+            flex-direction: column;
             justify-content: space-between;
-            margin: 24px 0;
-            position: relative;
         }
-        
-        .stepper::before {
-            content: '';
-            position: absolute;
-            top: 12px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--gray-border);
-            z-index: 1;
+
+        .font-preview-card:hover {
+            border-color: #ef4444;
+            box-shadow: 0 6px 16px rgba(248, 113, 113, 0.18);
+            background-color: #fef2f2;
         }
-        
-        .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            z-index: 2;
-            flex: 1;
-        }
-        
-        .step-circle {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: white;
-            border: 2px solid var(--gray-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .step.active .step-circle {
-            background: var(--primary-red);
-            border-color: var(--primary-red);
-            color: white;
-        }
-        
-        .step-label {
-            font-size: 12px;
-            text-align: center;
+
+        .font-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: #6b7280;
         }
-        
-        .step.active .step-label {
-            color: var(--primary-red);
-            font-weight: 500;
+
+        .font-impact  { font-family: Impact, Haettenschweiler, "Arial Narrow Bold", system-ui, sans-serif; }
+        .font-verdana { font-family: Verdana, system-ui, sans-serif; }
+        .font-georgia { font-family: Georgia, "Times New Roman", serif; }
+        .font-arial   { font-family: Arial, system-ui, sans-serif; }
+
+        .preview-text {
+            font-size: 1.05rem;
+            line-height: 1.3;
+            word-break: break-word;
         }
-        
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        .card-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        
-        .card-number {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--primary-red);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 600;
-            margin-right: 12px;
-        }
-        
-        .card-title {
-            font-size: 16px;
-            font-weight: 600;
-        }
-        
-        .form-group {
-            margin-bottom: 16px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        input[type="text"],
-        input[type="file"] {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--gray-border);
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        
-        input[type="file"] {
-            padding: 8px 12px;
-        }
-        
-        .required::after {
-            content: " *";
-            color: var(--primary-red);
-        }
-        
-        .font-previews {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 16px;
-        }
-        
-        @media (min-width: 768px) {
-            .font-previews {
-                grid-template-columns: 1fr 1fr 1fr 1fr;
-            }
-        }
-        
-        .font-option {
-            border: 1px solid var(--gray-border);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .font-option.selected {
-            border-color: var(--primary-red);
-            background: var(--light-red);
-        }
-        
-        .font-preview {
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 8px;
-        }
-        
-        .font-bold-impact {
-            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        
-        .font-clean-verdana {
-            font-family: Verdana, Geneva, sans-serif;
-            font-size: 16px;
-        }
-        
-        .font-serif-georgia {
-            font-family: Georgia, 'Times New Roman', Times, serif;
-            font-size: 17px;
-        }
-        
-        .font-neutral-arial {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 16px;
-        }
-        
-        .font-name {
-            font-size: 12px;
-            color: #6b7280;
-        }
-        
-        .colors-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-top: 16px;
-        }
-        
+
         .color-option {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
+            width: 22px;
+            height: 22px;
+            border-radius: 9999px;
+            display: inline-block;
+            border: 1px solid rgba(148, 163, 184, 0.4);
         }
-        
-        .color-swatch {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            margin-bottom: 6px;
-            border: 2px solid transparent;
-        }
-        
-        .color-option.selected .color-swatch {
-            border-color: var(--primary-red);
-        }
-        
-        .color-name {
-            font-size: 12px;
-            text-align: center;
-        }
-        
-        .color-black { background: #000; }
-        .color-white { background: #fff; border: 1px solid var(--gray-border); }
-        .color-red { background: #dc2626; }
-        .color-orange { background: #ea580c; }
-        .color-yellow { background: #ca8a04; }
-        .color-green { background: #16a34a; }
-        .color-blue { background: #2563eb; }
-        .color-purple { background: #9333ea; }
-        
-        .sign-type-options {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 16px;
-        }
-        
-        .sign-type-option {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border: 1px solid var(--gray-border);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .sign-type-option.selected {
-            border-color: var(--primary-red);
-            background: var(--light-red);
-        }
-        
-        .sign-type-radio {
-            margin-right: 12px;
-        }
-        
-        .sign-type-label {
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        .submit-button {
-            width: 100%;
-            background: var(--primary-red);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 8px;
-        }
-        
-        .submit-button:hover {
-            background: var(--dark-red);
-        }
-        
-        .submit-button:disabled {
-            background: #9ca3af;
-            cursor: not-allowed;
-        }
-        
-        .optional {
-            color: #6b7280;
-            font-size: 12px;
-            font-weight: normal;
-        }
+
+        .color-label { font-size: 0.875rem; color: #374151; }
     </style>
 </head>
-<body>
-    <div class="header">
-        <div class="badge">Первый Цех • AI-вывески</div>
-        <h1>Бриф на разработку вывески</h1>
-        <p class="subtitle">Заполните форму, чтобы мы создали вывеску вашей мечты</p>
-    </div>
-    
-    <div class="stepper">
-        <div class="step active">
-            <div class="step-circle">1</div>
-            <div class="step-label">Фото фасада</div>
+<body class="min-h-screen pb-24">
+    <div class="container mx-auto px-4 py-6 max-w-2xl space-y-6">
+
+        <!-- Header -->
+        <header class="space-y-2">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-gray-200 shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                <span class="text-xs font-medium uppercase tracking-wide text-gray-500">
+                    Первый Цех • AI-вывески
+                </span>
+            </div>
+            <h1 class="text-2xl font-semibold text-gray-900 mt-2">
+                Бриф на разработку вывески
+            </h1>
+            <p class="text-sm text-gray-600">
+                Заполните короткую форму — по этим данным мы подготовим варианты вывесок на основе фото вашего фасада.
+            </p>
+        </header>
+
+        <!-- Прогресс по шагам -->
+        <div class="section-card !py-3 !px-4 flex flex-wrap items-center gap-3 text-xs text-gray-500">
+            <div class="flex items-center gap-2">
+                <span class="step-badge">1</span>
+                <span>Фото фасада</span>
+            </div>
+            <span class="text-gray-400">→</span>
+            <div class="flex items-center gap-2">
+                <span class="step-badge">2</span>
+                <span>Текст / макет вывески</span>
+            </div>
+            <span class="text-gray-400">→</span>
+            <div class="flex items-center gap-2">
+                <span class="step-badge">3</span>
+                <span>Цвет вывески</span>
+            </div>
+            <span class="text-gray-400">→</span>
+            <div class="flex items-center gap-2">
+                <span class="step-badge">4</span>
+                <span>Тип вывески</span>
+            </div>
         </div>
-        <div class="step">
-            <div class="step-circle">2</div>
-            <div class="step-label">Текст / макет</div>
-        </div>
-        <div class="step">
-            <div class="step-circle">3</div>
-            <div class="step-label">Цвет вывески</div>
-        </div>
-        <div class="step">
-            <div class="step-circle">4</div>
-            <div class="step-label">Тип вывески</div>
-        </div>
-    </div>
-    
-    <form id="briefForm">
+
         <!-- Шаг 1: Фото фасада -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-number">1</div>
-                <div class="card-title">Фото фасада</div>
+        <section class="section-card space-y-4">
+            <div class="flex items-center gap-3">
+                <span class="step-badge">1</span>
+                <div>
+                    <h2 class="text-sm font-semibold tracking-wide uppercase text-gray-700">
+                        Фото фасада
+                    </h2>
+                    <p class="text-xs text-gray-500">
+                        Главный референс, куда мы «посадим» вывеску
+                    </p>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="facadePhoto" class="required">Загрузите фото вашего фасада</label>
-                <input type="file" id="facadePhoto" name="facadePhoto" accept="image/*" required>
+
+            <div class="space-y-2 mt-2">
+                <label for="facadePhoto" class="block text-sm font-medium text-gray-700">
+                    Загрузите фото фасада
+                </label>
+                <p class="text-xs text-gray-500 mb-1">
+                    На фото должна быть чётко отмечена область под вывеску (рамка / маркер).
+                </p>
+                <input
+                    type="file"
+                    id="facadePhoto"
+                    name="facadePhoto"
+                    accept="image/*"
+                    required
+                    class="w-full text-sm text-gray-500
+                           file:mr-4 file:py-2 file:px-4
+                           file:rounded-md file:border-0
+                           file:text-sm file:font-medium
+                           file:bg-red-50 file:text-red-600
+                           hover:file:bg-red-100"
+                >
+                <p class="mt-1 text-xs text-gray-400">
+                    Форматы: JPEG, PNG (до 5&nbsp;МБ).
+                </p>
             </div>
-        </div>
-        
+        </section>
+
         <!-- Шаг 2: Текст / макет вывески -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-number">2</div>
-                <div class="card-title">Текст / макет вывески</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="signFile">Логотип или макет (если есть)</label>
-                <input type="file" id="signFile" name="signFile" accept="image/*,image/svg+xml">
-            </div>
-            
-            <div class="form-group">
-                <label for="signText">Текст вывески</label>
-                <input type="text" id="signText" name="signText" placeholder="Например: Булочная «Хлеб да соль»">
-            </div>
-            
-            <div class="form-group">
-                <label>Выберите шрифт</label>
-                <div class="font-previews">
-                    <div class="font-option selected" data-font="bold-impact">
-                        <div class="font-preview font-bold-impact">Пример</div>
-                        <div class="font-name">Жирный Impact</div>
-                    </div>
-                    <div class="font-option" data-font="clean-verdana">
-                        <div class="font-preview font-clean-verdana">Пример</div>
-                        <div class="font-name">Чистый Verdana</div>
-                    </div>
-                    <div class="font-option" data-font="serif-georgia">
-                        <div class="font-preview font-serif-georgia">Пример</div>
-                        <div class="font-name">Классический Georgia</div>
-                    </div>
-                    <div class="font-option" data-font="neutral-arial">
-                        <div class="font-preview font-neutral-arial">Пример</div>
-                        <div class="font-name">Нейтральный Arial</div>
-                    </div>
+        <section class="section-card space-y-6">
+            <div class="flex items-center gap-3">
+                <span class="step-badge">2</span>
+                <div>
+                    <h2 class="text-sm font-semibold tracking-wide uppercase text-gray-700">
+                        Текст / макет вывески
+                    </h2>
+                    <p class="text-xs text-gray-500">
+                        Прикрепите макет/логотип или введите текст вывески
+                    </p>
                 </div>
             </div>
-        </div>
-        
-        <!-- Шаг 3: Цвет вывески -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-number">3</div>
-                <div class="card-title">Цвет вывески</div>
+
+            <!-- Файл логотипа / вывески (опционально) -->
+            <div class="space-y-2">
+                <label for="signFile" class="block text-sm font-medium text-gray-700">
+                    Логотип или готовое изображение вывески <span class="text-gray-400">(необязательно)</span>
+                </label>
+                <input
+                    type="file"
+                    id="signFile"
+                    name="signFile"
+                    accept="image/*,image/svg+xml"
+                    class="w-full text-sm text-gray-500
+                           file:mr-4 file:py-2 file:px-4
+                           file:rounded-md file:border-0
+                           file:text-sm file:font-medium
+                           file:bg-red-50 file:text-red-600
+                           hover:file:bg-red-100"
+                >
+                <p class="mt-1 text-xs text-gray-400">
+                    Если макета нет, просто введите текст ниже.
+                </p>
             </div>
-            
-            <div class="colors-grid">
-                <div class="color-option" data-color="black">
-                    <div class="color-swatch color-black"></div>
-                    <div class="color-name">Чёрный</div>
-                </div>
-                <div class="color-option" data-color="white">
-                    <div class="color-swatch color-white"></div>
-                    <div class="color-name">Белый</div>
-                </div>
-                <div class="color-option" data-color="red">
-                    <div class="color-swatch color-red"></div>
-                    <div class="color-name">Красный</div>
-                </div>
-                <div class="color-option" data-color="orange">
-                    <div class="color-swatch color-orange"></div>
-                    <div class="color-name">Оранжевый</div>
-                </div>
-                <div class="color-option" data-color="yellow">
-                    <div class="color-swatch color-yellow"></div>
-                    <div class="color-name">Жёлтый</div>
-                </div>
-                <div class="color-option" data-color="green">
-                    <div class="color-swatch color-green"></div>
-                    <div class="color-name">Зелёный</div>
-                </div>
-                <div class="color-option" data-color="blue">
-                    <div class="color-swatch color-blue"></div>
-                    <div class="color-name">Синий</div>
-                </div>
-                <div class="color-option" data-color="purple">
-                    <div class="color-swatch color-purple"></div>
-                    <div class="color-name">Фиолетовый</div>
+
+            <!-- Текст вывески -->
+            <div class="space-y-2">
+                <label for="signText" class="block text-sm font-medium text-gray-700">
+                    Текст вывески
+                </label>
+                <input
+                    type="text"
+                    id="signText"
+                    name="signText"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md
+                           focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500
+                           text-sm"
+                    placeholder="Например: Супермаркет «Продукты 24»"
+                >
+                <p class="mt-1 text-xs text-gray-400">
+                    Этот текст подставится в примеры шрифтов ниже.
+                </p>
+            </div>
+
+            <!-- Шрифты -->
+            <div class="space-y-3">
+                <p class="text-sm font-medium text-gray-700">Какой характер шрифта вам ближе?</p>
+                <p class="text-xs text-gray-500">
+                    Один и тот же текст в четырёх вариантах. На десктопе — в одну строку.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mt-2">
+                    <!-- Font 1 -->
+                    <label class="cursor-pointer">
+                        <input
+                            id="font1"
+                            name="fontChoice"
+                            type="radio"
+                            value="bold-impact"
+                            class="hidden peer"
+                        >
+                        <div class="font-preview-card peer-checked:border-red-500 peer-checked:bg-rose-50">
+                            <div class="font-label mb-1">
+                                Шрифт 1 • Жирный
+                            </div>
+                            <div class="preview-text font-impact js-sign-preview">
+                                Пример текста вывески
+                            </div>
+                        </div>
+                    </label>
+
+                    <!-- Font 2 -->
+                    <label class="cursor-pointer">
+                        <input
+                            id="font2"
+                            name="fontChoice"
+                            type="radio"
+                            value="clean-verdana"
+                            class="hidden peer"
+                            checked
+                        >
+                        <div class="font-preview-card peer-checked:border-red-500 peer-checked:bg-rose-50">
+                            <div class="font-label mb-1">
+                                Шрифт 2 • Читаемый
+                            </div>
+                            <div class="preview-text font-verdana js-sign-preview">
+                                Пример текста вывески
+                            </div>
+                        </div>
+                    </label>
+
+                    <!-- Font 3 -->
+                    <label class="cursor-pointer">
+                        <input
+                            id="font3"
+                            name="fontChoice"
+                            type="radio"
+                            value="serif-georgia"
+                            class="hidden peer"
+                        >
+                        <div class="font-preview-card peer-checked:border-red-500 peer-checked:bg-rose-50">
+                            <div class="font-label mb-1">
+                                Шрифт 3 • С засечками
+                            </div>
+                            <div class="preview-text font-georgia js-sign-preview">
+                                Пример текста вывески
+                            </div>
+                        </div>
+                    </label>
+
+                    <!-- Font 4 -->
+                    <label class="cursor-pointer">
+                        <input
+                            id="font4"
+                            name="fontChoice"
+                            type="radio"
+                            value="neutral-arial"
+                            class="hidden peer"
+                        >
+                        <div class="font-preview-card peer-checked:border-red-500 peer-checked:bg-rose-50">
+                            <div class="font-label mb-1">
+                                Шрифт 4 • Нейтральный
+                            </div>
+                            <div class="preview-text font-arial js-sign-preview">
+                                Пример текста вывески
+                            </div>
+                        </div>
+                    </label>
                 </div>
             </div>
-            
-            <div class="form-group" style="margin-top: 16px;">
-                <label for="colorsText">Цвета словами <span class="optional">(опционально)</span></label>
-                <input type="text" id="colorsText" name="colorsText" placeholder="Например: золотые буквы на тёмном фоне">
+        </section>
+
+        <!-- Шаг 3: Цветовая палитра -->
+        <section class="section-card space-y-4">
+            <div class="flex items-center gap-3">
+                <span class="step-badge">3</span>
+                <div>
+                    <h2 class="text-sm font-semibold tracking-wide uppercase text-gray-700">
+                        Цвет вывески
+                    </h2>
+                    <p class="text-xs text-gray-500">
+                        Выберите цвет или сочетание цветов
+                    </p>
+                </div>
             </div>
-        </div>
-        
+
+            <p class="text-xs text-gray-500">
+                Отметьте подходящие варианты и при необходимости уточните их словами.
+            </p>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
+                <label class="flex items-center cursor-pointer">
+                    <input id="colorBlack" name="colors" type="checkbox" value="black"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
+                    <span class="ml-2 flex items-center gap-2">
+                        <span class="color-option bg-black"></span>
+                        <span class="color-label">Чёрный</span>
+                    </span>
+                </label>
+
+                <label class="flex items-center cursor-pointer">
+                    <input id="colorWhite" name="colors" type="checkbox" value="white"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
+                    <span class="ml-2 flex items-center gap-2">
+                        <span class="color-option bg-white"></span>
+                        <span class="color-label">Белый</span>
+                    </span>
+                </label>
+
+                <label class="flex items-center cursor-pointer">
+                    <input id="colorRed" name="colors" type="checkbox" value="red"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
+                    <span class="ml-2 flex items-center gap-2">
+                        <span class="color-option" style="background-color:#ef4444;"></span>
+                        <span class="color-label">Красный</span>
+                    </span>
+                </label>
+
+                <label class="flex items-center cursor-pointer">
+                    <input id="colorOrange" name="colors" type="checkbox" value="orange"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
+                    <span class="ml-2 flex items-center gap-2">
+                        <span class="color-option" style="background-color:#fb923c;"></span>
+                        <span class="color-label">Оранжевый</span>
+                    </span>
+                </label>
+
+                <label class="flex items-center cursor-pointer">
+                    <input id="colorYellow" name="colors" type="checkbox" value="yellow"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
+                    <span class="ml-2 flex items-center gap-2">
+                        <span class="color-option" style="background-color:#facc15;"></span>
+                        <span class="color-label">Жёлтый</span>
+                    </span>
+                </label>
+
+                <label class="flex items-center cursor-pointer">
+                    <input id="colorGreen" name="colors" type="checkbox" value="green"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
+                    <span class="ml-2 flex items-center gap-2">
+                        <span class="color-option" style="background-color:#22c55e;"></span>
+                        <span class="color-label">Зелёный</span>
+                    </span>
+                </label>
+
+                <label class="flex items-center cursor-pointer">
+                    <input id="colorBlue" name="colors" type="checkbox" value="blue"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
+                    <span class="ml-2 flex items-center gap-2">
+                        <span class="color-option" style="background-color:#3b82f6;"></span>
+                        <span class="color-label">Синий</span>
+                    </span>
+                </label>
+
+                <label class="flex items-center cursor-pointer">
+                    <input id="colorPurple" name="colors" type="checkbox" value="purple"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
+                    <span class="ml-2 flex items-center gap-2">
+                        <span class="color-option" style="background-color:#a855f7;"></span>
+                        <span class="color-label">Фиолетовый</span>
+                    </span>
+                </label>
+            </div>
+
+            <!-- Описание цветов текстом -->
+            <div class="space-y-2 mt-3">
+                <label for="colorsText" class="block text-sm font-medium text-gray-700">
+                    Цвета словами <span class="text-gray-400">(опционально)</span>
+                </label>
+                <input
+                    type="text"
+                    id="colorsText"
+                    name="colorsText"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md
+                           focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500
+                           text-sm"
+                    placeholder="Например: золотые буквы на тёмном графитовом фоне"
+                >
+            </div>
+        </section>
+
         <!-- Шаг 4: Тип вывески -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-number">4</div>
-                <div class="card-title">Тип вывески</div>
-            </div>
-            
-            <div class="sign-type-options">
-                <div class="sign-type-option" data-type="lightbox">
-                    <input type="radio" name="signType" id="lightbox" class="sign-type-radio" required>
-                    <label for="lightbox" class="sign-type-label">Лайтбокс (световая коробка)</label>
-                </div>
-                <div class="sign-type-option" data-type="dimensional-letters">
-                    <input type="radio" name="signType" id="dimensional-letters" class="sign-type-radio">
-                    <label for="dimensional-letters" class="sign-type-label">Объёмные буквы</label>
-                </div>
-                <div class="sign-type-option" data-type="neon">
-                    <input type="radio" name="signType" id="neon" class="sign-type-radio">
-                    <label for="neon" class="sign-type-label">Неоновая вывеска</label>
-                </div>
-                <div class="sign-type-option" data-type="composite-box">
-                    <input type="radio" name="signType" id="composite-box" class="sign-type-radio">
-                    <label for="composite-box" class="sign-type-label">Композитный бокс</label>
-                </div>
-                <div class="sign-type-option" data-type="metal-letters">
-                    <input type="radio" name="signType" id="metal-letters" class="sign-type-radio">
-                    <label for="metal-letters" class="sign-type-label">Металлические буквы</label>
+        <section class="section-card space-y-4">
+            <div class="flex items-center gap-3">
+                <span class="step-badge">4</span>
+                <div>
+                    <h2 class="text-sm font-semibold tracking-wide uppercase text-gray-700">
+                        Тип вывески
+                    </h2>
+                    <p class="text-xs text-gray-500">
+                        Выберите формат, который вам ближе
+                    </p>
                 </div>
             </div>
-        </div>
-        
-        <button type="button" id="submitButton" class="submit-button">Отправить бриф</button>
-    </form>
+
+            <div class="space-y-2">
+                <label class="flex items-center cursor-pointer">
+                    <input id="signType1" name="signType" type="radio" value="lightbox"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500" required>
+                    <span class="ml-3 text-sm text-gray-700">Световой короб</span>
+                </label>
+
+                <label class="flex items-center cursor-pointer">
+                    <input id="signType2" name="signType" type="radio" value="dimensional-letters"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
+                    <span class="ml-3 text-sm text-gray-700">Объёмные буквы</span>
+                </label>
+
+                <label class="flex items-center cursor-pointer">
+                    <input id="signType3" name="signType" type="radio" value="neon"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
+                    <span class="ml-3 text-sm text-gray-700">Неоновая вывеска</span>
+                </label>
+
+                <label class="flex items-center cursor-pointer">
+                    <input id="signType4" name="signType" type="radio" value="composite-box"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
+                    <span class="ml-3 text-sm text-gray-700">Композитный короб</span>
+                </label>
+
+                <label class="flex items-center cursor-pointer">
+                    <input id="signType5" name="signType" type="radio" value="metal-letters"
+                           class="h-4 w-4 text-red-600 focus:ring-red-500">
+                    <span class="ml-3 text-sm text-gray-700">Металлические буквы</span>
+                </label>
+            </div>
+        </section>
+
+        <!-- Submit -->
+        <section class="space-y-3">
+            <p class="text-xs text-gray-400">
+                Все ответы будут переданы в бота и использованы только для подготовки вариантов вывески.
+            </p>
+            <button
+                id="submitButton"
+                type="button"
+                class="w-full brand-red text-white font-medium py-3 px-4 rounded-md
+                       hover:bg-red-600 transition duration-150
+                       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 text-sm"
+            >
+                Отправить бриф
+            </button>
+        </section>
+    </div>
 
     <script>
-        // Инициализация Telegram WebApp
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        
-        // Элементы DOM
-        const briefForm = document.getElementById('briefForm');
-        const submitButton = document.getElementById('submitButton');
-        const signTextInput = document.getElementById('signText');
-        const fontOptions = document.querySelectorAll('.font-option');
-        const colorOptions = document.querySelectorAll('.color-option');
-        const signTypeOptions = document.querySelectorAll('.sign-type-option');
-        
-        // Состояние приложения
-        let selectedFont = 'bold-impact';
-        let selectedColors = [];
-        let selectedSignType = null;
-        
-        // Обновление предпросмотра шрифтов
-        function updateFontPreviews() {
-            const text = signTextInput.value || 'Пример';
-            document.querySelectorAll('.font-preview').forEach(preview => {
-                preview.textContent = text;
-            });
-        }
-        
-        // Обработчики событий
-        signTextInput.addEventListener('input', updateFontPreviews);
-        
-        fontOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                fontOptions.forEach(opt => opt.classList.remove('selected'));
-                option.classList.add('selected');
-                selectedFont = option.getAttribute('data-font');
-            });
-        });
-        
-        colorOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                const color = option.getAttribute('data-color');
-                if (selectedColors.includes(color)) {
-                    selectedColors = selectedColors.filter(c => c !== color);
-                    option.classList.remove('selected');
-                } else {
-                    selectedColors.push(color);
-                    option.classList.add('selected');
-                }
-            });
-        });
-        
-        signTypeOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                const radio = option.querySelector('input[type="radio"]');
-                radio.checked = true;
-                selectedSignType = radio.id;
-                
-                signTypeOptions.forEach(opt => opt.classList.remove('selected'));
-                option.classList.add('selected');
-            });
-        });
-        
-        // Функция для чтения файла и преобразования в base64
-        function readFileAsBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    // Убираем префикс "data:image/...;base64,"
-                    const base64 = reader.result.split(',')[1];
-                    resolve({
-                        name: file.name,
-                        type: file.type,
-                        size: file.size,
-                        base64: base64
-                    });
-                };
-                reader.onerror = () => reject(new Error('Не удалось прочитать файл'));
-                reader.readAsDataURL(file);
-            });
-        }
-        
-        // Валидация формы
-        function validateForm() {
-            const facadeFile = document.getElementById('facadePhoto').files[0];
-            const signFile = document.getElementById('signFile').files[0];
-            const signText = signTextInput.value.trim();
-            
-            // Проверка обязательного фото фасада
+        // 1) URL вебхука n8n
+        const WEBHOOK_URL = 'https://primary-production-2705e.up.railway.app/webhook-test/1zeh-form';
+
+        // 2) Live-превью текста во всех шрифтах
+        (function () {
+            const signTextInput = document.getElementById('signText');
+            const previewEls = document.querySelectorAll('.js-sign-preview');
+
+            function updatePreviews() {
+                const value = (signTextInput.value || '').trim();
+                const text = value || 'Пример текста вывески';
+                previewEls.forEach(el => { el.textContent = text; });
+            }
+
+            if (signTextInput) {
+                signTextInput.addEventListener('input', updatePreviews);
+                updatePreviews();
+            }
+        })();
+
+        // 3) Отправка брифа: файлы -> n8n, данные -> бот
+        document.getElementById('submitButton').addEventListener('click', async function () {
+            const facadeFile = document.getElementById('facadePhoto').files[0] || null;
+            const signFile   = document.getElementById('signFile').files[0]   || null;
+
+            const signText   = document.getElementById('signText').value || null;
+            const fontChoice = document.querySelector('input[name="fontChoice"]:checked')?.value || null;
+            const colors     = Array.from(document.querySelectorAll('input[name="colors"]:checked')).map(el => el.value);
+            const colorsText = document.getElementById('colorsText').value || null;
+            const signType   = document.querySelector('input[name="signType"]:checked')?.value || null;
+
             if (!facadeFile) {
                 alert('Загрузите фото фасада.');
-                return false;
-            }
-            
-            // Проверка, что есть либо файл макета, либо текст
-            if (!signFile && !signText) {
-                alert('Добавьте логотип/макет или введите текст вывески.');
-                return false;
-            }
-            
-            // Проверка выбранного типа вывески
-            if (!selectedSignType) {
-                alert('Пожалуйста, выберите тип вывески.');
-                return false;
-            }
-            
-            return true;
-        }
-        
-        // Основная функция отправки
-        async function submitBrief() {
-            // Валидация
-            if (!validateForm()) {
                 return;
             }
-            
-            // Получаем файлы
-            const facadeFile = document.getElementById('facadePhoto').files[0];
-            const signFile = document.getElementById('signFile').files[0];
-            
-            // Блокируем кнопку
-            submitButton.disabled = true;
-            submitButton.textContent = 'Отправка...';
-            
-            try {
-                // Читаем файлы
-                const facadeFileData = await readFileAsBase64(facadeFile);
-                let signFileData = null;
-                
-                if (signFile) {
-                    signFileData = await readFileAsBase64(signFile);
-                }
-                
-                // Формируем payload
-                const payload = {
-                    facadeFile: facadeFileData,
-                    signFile: signFileData,
-                    signText: signTextInput.value.trim() || null,
-                    fontChoice: selectedFont,
-                    colors: selectedColors,
-                    colorsText: document.getElementById('colorsText').value.trim() || null,
-                    signType: selectedSignType,
-                    tgUserId: tg.initDataUnsafe?.user?.id,
-                    chatId: tg.initDataUnsafe?.user?.id,
-                    sentAt: new Date().toISOString()
-                };
-                
-                // Отправляем данные в Telegram бота
-                tg.sendData(JSON.stringify(payload));
-                
-                // Закрываем WebApp
-                tg.close();
-                
-            } catch (error) {
-                alert(`Ошибка при обработке файлов: ${error.message}`);
-                submitButton.disabled = false;
-                submitButton.textContent = 'Отправить бриф';
+            if (!signType) {
+                alert('Пожалуйста, выберите тип вывески.');
+                return;
             }
+            if (!signFile && !signText) {
+                alert('Добавьте логотип/макет или введите текст вывески.');
+                return;
+            }
+
+            const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+            const tgUserId = tg?.initDataUnsafe?.user?.id || null;
+            const chatId   = tgUserId;
+
+            // --- отправляем в n8n (multipart/form-data) ---
+            const fd = new FormData();
+            fd.append('facadePhoto', facadeFile);
+            if (signFile) fd.append('signFile', signFile);
+
+            if (signText)   fd.append('signText',   signText);
+            if (fontChoice) fd.append('fontChoice', fontChoice);
+            if (signType)   fd.append('signType',   signType);
+            if (colors.length) fd.append('colors', colors.join(','));
+            if (colorsText) fd.append('colorsText', colorsText);
+
+            if (tgUserId) fd.append('tgUserId', String(tgUserId));
+            if (chatId)   fd.append('chatId',   String(chatId));
+
+            try {
+                await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    body: fd,
+                });
+                // тело ответа не читаем, чтобы не упираться в CORS
+            } catch (err) {
+                console.error('Webhook error:', err);
+                alert('Не удалось отправить данные. Попробуйте ещё раз.');
+                return;
+            }
+
+            // --- компактный JSON обратно в бота ---
+            const payload = {
+                facadeFileName: facadeFile.name,
+                signFileName: signFile ? signFile.name : null,
+                signText,
+                fontChoice,
+                colors,
+                colorsText,
+                signType,
+                tgUserId,
+                chatId,
+            };
+
+            if (tg) {
+                tg.sendData(JSON.stringify(payload));
+                tg.close();
+            } else {
+                console.log('Payload to bot:', payload);
+                alert('Бриф отправлен (тестовый режим, вне Telegram).');
+            }
+        });
+
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.expand();
         }
-        
-        // Обработчик отправки формы
-        submitButton.addEventListener('click', submitBrief);
-        
-        // Инициализация предпросмотра шрифтов
-        updateFontPreviews();
     </script>
 </body>
 </html>
