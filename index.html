@@ -484,10 +484,7 @@
     </div>
 
     <script>
-        // ===== КОНФИГ: URL сервера на Railway, который грузит в S3 =====
-        const UPLOAD_URL = 'https://YOUR-RAILWAY-APP-DOMAIN/upload'; // замени на свой домен
-
-        // LIVE-превью текста во всех шрифтах
+        // превью текста во всех шрифтах
         (function () {
             const signTextInput = document.getElementById('signText');
             const previewEls = document.querySelectorAll('.js-sign-preview');
@@ -504,7 +501,30 @@
             }
         })();
 
-        // Отправка брифа
+        // файл → base64 (+метаданные)
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const result = reader.result;
+                    let base64 = result;
+                    if (typeof result === 'string') {
+                        const idx = result.indexOf(',');
+                        base64 = idx !== -1 ? result.slice(idx + 1) : result;
+                    }
+                    resolve({
+                        name: file.name,
+                        mimeType: file.type,
+                        size: file.size,
+                        base64: base64,
+                    });
+                };
+                reader.onerror = () => reject(reader.error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // отправка брифа в Telegram (web_app_data.data)
         document.getElementById('submitButton').addEventListener('click', async function () {
             const facadeFile = document.getElementById('facadePhoto').files[0] || null;
             const signFile   = document.getElementById('signFile').files[0]   || null;
@@ -532,45 +552,25 @@
             const tgUserId = tg?.initDataUnsafe?.user?.id || null;
             const chatId   = tg?.initDataUnsafe?.user?.id || null;
 
-            // 1) Шлём файлы и параметры на бэкенд → он кладёт в S3 и вернёт имена файлов
-            const formData = new FormData();
-            formData.append('facadePhoto', facadeFile);
-            if (signFile) formData.append('signFile', signFile);
+            let facadePhotoData = null;
+            let signFileData    = null;
 
-            if (tgUserId) formData.append('tgUserId', String(tgUserId));
-            if (chatId)   formData.append('chatId',   String(chatId));
-
-            if (signText)   formData.append('signText',   signText);
-            if (fontChoice) formData.append('fontChoice', fontChoice);
-            if (signType)   formData.append('signType',   signType);
-            if (colors && colors.length) formData.append('colors', JSON.stringify(colors));
-            if (colorsText) formData.append('colorsText', colorsText);
-
-            let uploadResult;
             try {
-                const resp = await fetch(UPLOAD_URL, {
-                    method: 'POST',
-                    body: formData,
-                });
-                if (!resp.ok) {
-                    console.error('Upload error:', resp.status);
-                    alert('Ошибка загрузки файлов. Попробуйте ещё раз.');
-                    return;
+                if (facadeFile) {
+                    facadePhotoData = await readFileAsBase64(facadeFile);
                 }
-                uploadResult = await resp.json();
-            } catch (err) {
-                console.error('Upload failed:', err);
-                alert('Ошибка соединения с сервером. Попробуйте ещё раз.');
+                if (signFile) {
+                    signFileData = await readFileAsBase64(signFile);
+                }
+            } catch (e) {
+                console.error('Ошибка чтения файлов', e);
+                alert('Не удалось прочитать файлы. Попробуйте другое изображение.');
                 return;
             }
 
-            // ожидаем, что сервер вернёт:
-            // { projectId, facadeKey, signKey }
             const payload = {
-                projectId: uploadResult.projectId || null,
-                facadeKey: uploadResult.facadeKey || null, // FACADE_YYYYMMDD_ID.ext
-                signKey:   uploadResult.signKey   || null, // SIGN_YYYYMMDD_ID.ext
-
+                facadePhoto: facadePhotoData, // {name, mimeType, size, base64} | null
+                signFile:    signFileData,    // {name, mimeType, size, base64} | null
                 signText,
                 fontChoice,
                 colors,
@@ -585,7 +585,7 @@
                 tg.close();
             } else {
                 console.log('Payload to bot:', payload);
-                alert('Бриф отправлен (тестовый режим).');
+                alert('Бриф отправлен (тестовый режим, вне Telegram).');
             }
         });
 
